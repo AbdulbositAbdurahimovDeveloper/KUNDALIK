@@ -1,0 +1,73 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_001 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # User entity'sining o'z ustunlari
+              - column:
+                  name: email
+                  type: varchar(255)
+                  # Unikal cheklovni bu yerda emas, alohida SQL blokida qo'shamiz
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: varchar(50)
+                  defaultValue: 'USER'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_non_locked
+                  type: boolean
+                  defaultValueBoolean: true
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: verification_code_request_count
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_verification_code_request_at
+                  type: timestamp(6)
+
+        # 2-QISM: Murakkab cheklovlarni, jumladan, QISMAN UNIKAL INDEKSNI toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- E-pochta manzilining noyobligini faqat o'chirilmagan (deleted = false) yozuvlar uchun ta'minlaydigan
+              -- QISMAN (PARTIAL) UNIKAL INDEKS yaratamiz.
+              CREATE UNIQUE INDEX uk_users_on_email_when_not_deleted
+              ON users (email)
+              WHERE deleted = false;

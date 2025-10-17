@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_012 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: verification_tokens
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token_type
+                  type: varchar(50) # 'ACCOUNT_ACTIVATION', 'PASSWORD_RESET' kabi enumlar uchun
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiry_date
+                  type: timestamp(6) # LocalDateTime ga mos keladi
+                  constraints:
+                    nullable: false
+              - column:
+                  # PostgreSQL uchun jsonb tipi eng yaxshi tanlov
+                  name: metadata
+                  type: jsonb
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Tokenni foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE verification_tokens
+                ADD CONSTRAINT fk_verification_tokens_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

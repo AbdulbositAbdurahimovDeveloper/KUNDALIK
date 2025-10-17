@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_009 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: reminders
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Reminder entity'sining o'z ustunlari
+              - column:
+                  name: reminder_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: text
+              - column:
+                  # PostgreSQL uchun jsonb tipi eng yaxshi tanlov
+                  name: action_metadata
+                  type: jsonb
+              - column:
+                  name: remind_at
+                  type: timestamp(6)
+              - column:
+                  name: recurrence_rule
+                  type: varchar(255)
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Eslatmani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE reminders
+                ADD CONSTRAINT fk_reminders_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

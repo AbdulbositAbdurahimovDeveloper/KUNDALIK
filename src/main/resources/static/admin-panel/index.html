@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boshqaruv Paneli</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>I18N Panel</h3>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-link active" data-page="languages">Tillar</a>
+            <a href="#" class="nav-link" data-page="keys">Kalit So'zlar</a>
+            <a href="#" class="nav-link" data-page="translations">Tarjimalar</a>
+        </nav>
+        <div class="sidebar-footer">
+            <button id="logout-button">Chiqish</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="main-header">
+            <h1 id="page-title">Tillar</h1>
+        </header>
+        <div class="content-area" id="content-area">
+            <!-- Dinamik kontent shu yerga yuklanadi -->
+            <p>Ma'lumotlar yuklanmoqda...</p>
+        </div>
+    </main>
+</div>
+
+<!-- Bu skriptlar muhim -->
+<script src="js/api.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_011 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: subscriptions
+            columns:
+              # AbsDateEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+
+              # Subscription entity'sining o'z ustunlari
+              - column:
+                  name: plan_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: starts_at
+                  type: timestamp(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamp(6)
+              - column:
+                  # PostgreSQL uchun jsonb tipi eng yaxshi tanlov
+                  name: metadata
+                  type: jsonb
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Obunani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE subscriptions
+                ADD CONSTRAINT fk_subscriptions_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

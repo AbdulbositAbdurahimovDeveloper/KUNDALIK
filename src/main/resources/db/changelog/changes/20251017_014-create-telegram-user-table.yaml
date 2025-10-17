@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_014 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: telegram_user
+            columns:
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+              - column:
+                  name: user_state
+                  type: varchar(50)
+                  defaultValue: 'NONE'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language_id
+                  type: bigint
+
+        # 2-QISM: Barcha murakkab cheklovlarni (UNIQUE, FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Telegram foydalanuvchisini saytdagi akkauntiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE telegram_user
+                ADD CONSTRAINT fk_telegram_user_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Telegram foydalanuvchisi tanlagan tilni bog'lash uchun FOREIGN KEY
+              ALTER TABLE telegram_user
+                ADD CONSTRAINT fk_telegram_user_on_language
+                FOREIGN KEY (language_id)
+                REFERENCES languages(id);
+              
+              -- Har bir sayt akkaunti faqat bitta Telegram akkauntiga bog'lanishini ta'minlash uchun UNIQUE KEY
+              -- Bu One-to-One munosabatini ma'lumotlar bazasi darajasida kafolatlaydi.
+              ALTER TABLE telegram_user
+                ADD CONSTRAINT uk_telegram_user_on_user_id UNIQUE (user_id);

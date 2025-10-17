@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_013 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: prayer_time_notifications
+            columns:
+              # AbsLongEntity'dan keladigan ustun
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              # PrayerTimeNotification entity'sining o'z ustunlari
+              - column:
+                  name: fajr_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fajr_offset_minutes
+                  type: int
+                  defaultValueNumeric: -10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sunrise_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sunrise_offset_minutes
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dhuhr_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: dhuhr_offset_minutes
+                  type: int
+                  defaultValueNumeric: -10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: asr_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: asr_offset_minutes
+                  type: int
+                  defaultValueNumeric: -10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: maghrib_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: maghrib_offset_minutes
+                  type: int
+                  defaultValueNumeric: -10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: isha_enabled
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: isha_offset_minutes
+                  type: int
+                  defaultValueNumeric: -10
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Barcha murakkab cheklovlarni (UNIQUE, FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Sozlamani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE prayer_time_notifications
+                ADD CONSTRAINT fk_prayer_time_notifications_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Har bir foydalanuvchining faqat bitta namoz vaqti sozlamasi bo'lishini ta'minlash uchun UNIQUE KEY
+              -- Bu One-to-One munosabatini ma'lumotlar bazasi darajasida kafolatlaydi.
+              ALTER TABLE prayer_time_notifications
+                ADD CONSTRAINT uk_prayer_time_notifications_on_user_id UNIQUE (user_id);

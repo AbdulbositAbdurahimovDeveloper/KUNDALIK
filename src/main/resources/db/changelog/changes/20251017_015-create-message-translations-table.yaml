@@ -1,0 +1,55 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_015 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: message_translations
+            columns:
+              # AbsLongEntity'dan keladigan ustun
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              # MessageTranslation entity'sining o'z ustunlari
+              - column:
+                  name: message_key_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: text
+                  type: text
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Barcha murakkab cheklovlarni (UNIQUE, FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Tarjimani xabar kalitiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE message_translations
+                ADD CONSTRAINT fk_message_translations_on_message_key
+                FOREIGN KEY (message_key_id)
+                REFERENCES message_keys(id);
+              
+              -- Tarjimani tilga bog'lash uchun FOREIGN KEY
+              ALTER TABLE message_translations
+                ADD CONSTRAINT fk_message_translations_on_language
+                FOREIGN KEY (language_id)
+                REFERENCES languages(id);
+              
+              -- Bitta xabar kalitining bitta tilda faqat bitta tarjimasi bo'lishini ta'minlash uchun
+              -- MURAKKAB (COMPOSITE) UNIKAL cheklov.
+              ALTER TABLE message_translations
+                ADD CONSTRAINT uk_message_translations_on_key_and_language UNIQUE (message_key_id, language_id);

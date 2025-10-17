@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_016 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Category entity'sining o'z ustunlari
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_type
+                  type: varchar(20) # 'INCOME', 'EXPENSE' uchun
+                  constraints:
+                    nullable: false
+              - column:
+                  name: icon_name
+                  type: varchar(50)
+              - column:
+                  name: color_code
+                  type: varchar(7) # Masalan, '#FF5733'
+              - column:
+                  name: user_id
+                  type: bigint
+                  # Bu ustun nullable, chunki tizim kategoriyalari uchun user_id bo'lmaydi
+              - column:
+                  name: parent_category_id
+                  type: bigint
+                  # Bu ustun ham nullable
+
+        # 2-QISM: Barcha murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Kategoriyani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE categories
+                ADD CONSTRAINT fk_categories_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Ichki kategoriya (sub-category) yaratish uchun o'z-o'ziga bog'lanish (self-referencing FOREIGN KEY)
+              ALTER TABLE categories
+                ADD CONSTRAINT fk_categories_on_parent_category
+                FOREIGN KEY (parent_category_id)
+                REFERENCES categories(id);

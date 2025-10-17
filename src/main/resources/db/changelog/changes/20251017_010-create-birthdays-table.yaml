@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_010 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: birthdays
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Birthday entity'sining o'z ustunlari
+              - column:
+                  name: full_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: notify_days_before
+                  type: int
+                  defaultValueNumeric: 3
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_notified_year
+                  type: int
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Tug'ilgan kun yozuvini foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE birthdays
+                ADD CONSTRAINT fk_birthdays_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

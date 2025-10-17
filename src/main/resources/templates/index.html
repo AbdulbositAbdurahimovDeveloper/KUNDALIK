@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Authenticating...</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<p>Please wait, redirecting to login page...</p>
+
+<script>
+    // 1. Telegram Web App'ni ishga tushirish
+    Telegram.WebApp.ready();
+
+    // 2. URL'dan 'chat_id'ni olish
+    const urlParams = new URLSearchParams(window.location.search);
+    const chatId = urlParams.get('chat_id');
+
+    if (!chatId) {
+        document.body.innerHTML = "<h1>Error: chat_id not found in URL.</h1>";
+    } else {
+        // 3. Keycloak uchun ma'lumotlarni sozlash
+        // BU YERDAGI QIYMATLARNI O'ZINGIZNING application.yml FAYLINGIZDAGILAR BILAN ALMASHTIRING
+        const keycloakIssuerUri = "http://localhost:8080/realms/your-realm"; // KEYCLOAK_ISSUER_URI
+        const keycloakClientId = "your-client-id"; // KEYCLOAK_CLIENT_ID
+
+        // Web App'ning o'zining manzili. Keycloak shu manzilga qaytaradi.
+        // Bu backend'dagi redirect-uri bilan bir xil bo'lishi SHART!
+        const redirectUri = "https://your-webapp-domain.com/index.html"; // KEYCLOAK_REDIRECT_URI
+
+
+        // 4. Keycloak'ga yo'naltiruvchi URL'ni yaratish
+        const keycloakAuthUrl = `${keycloakIssuerUri}/protocol/openid-connect/auth` +
+            `?client_id=${encodeURIComponent(keycloakClientId)}` +
+            `&response_type=code` +
+            `&scope=openid%20profile%20email` +
+            `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+            `&state=${encodeURIComponent(chatId)}`; // chat_id'ni 'state' parametri sifatida yuborish
+
+        console.log("Redirecting to:", keycloakAuthUrl);
+
+        // 5. Foydalanuvchini Keycloak'ga yo'naltirish
+        window.location.href = keycloakAuthUrl;
+    }
+</script>
+</body>
+</html>

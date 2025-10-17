@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_017 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: transactions
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Transaction entity'sining o'z ustunlari
+              - column:
+                  name: transaction_type
+                  type: varchar(20) # 'INCOME', 'EXPENSE', 'TRANSFER' uchun
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(18, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency_code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_date
+                  type: timestamp(6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+              - column:
+                  name: from_account_id
+                  type: bigint
+              - column:
+                  name: to_account_id
+                  type: bigint
+
+        # 2-QISM: Barcha murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Tranzaksiyani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE transactions
+                ADD CONSTRAINT fk_transactions_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Tranzaksiyani kategoriyaga bog'lash uchun FOREIGN KEY
+              ALTER TABLE transactions
+                ADD CONSTRAINT fk_transactions_on_category
+                FOREIGN KEY (category_id)
+                REFERENCES categories(id);
+              
+              -- Chiqim hisobini bog'lash uchun FOREIGN KEY
+              ALTER TABLE transactions
+                ADD CONSTRAINT fk_transactions_on_from_account
+                FOREIGN KEY (from_account_id)
+                REFERENCES accounts(id);
+              
+              -- Kirim hisobini bog'lash uchun FOREIGN KEY
+              ALTER TABLE transactions
+                ADD CONSTRAINT fk_transactions_on_to_account
+                FOREIGN KEY (to_account_id)
+                REFERENCES accounts(id);

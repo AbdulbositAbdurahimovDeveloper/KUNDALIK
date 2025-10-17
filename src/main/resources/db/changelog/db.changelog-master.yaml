@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/20251017_001_create-users-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_002-create-attachments-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_003-create-languages-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_ 004-create-message-keys-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_005-create-user-profiles-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_006-create-accounts-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_007-create-addresses-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_008-create-notes-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_009-create-reminders-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_010-create-birthdays-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_011-create-subscriptions-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_012-create-verification-tokens-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_013-create-prayer-time-notifications-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_014-create-telegram-user-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_015-create-message-translations-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_016-create-categories-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_017-create-transactions-table.yaml
+  - include:
+      file: db/changelog/changes/20251017_018-create-user-settings-table.yaml
+
+

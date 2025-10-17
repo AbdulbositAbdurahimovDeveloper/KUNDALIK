@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_018 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: user_settings
+            columns:
+              # AbsLongEntity'dan keladigan ustun
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              # UserSettings entity'sining o'z ustunlari
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: default_address_id
+                  type: bigint
+                  # Bu ustun nullable, chunki foydalanuvchi hali standart manzil tanlamagan bo'lishi mumkin
+
+        # 2-QISM: Barcha murakkab cheklovlarni (UNIQUE, FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Sozlamani foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE user_settings
+                ADD CONSTRAINT fk_user_settings_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Sozlamadagi standart manzilni bog'lash uchun FOREIGN KEY
+              ALTER TABLE user_settings
+                ADD CONSTRAINT fk_user_settings_on_address
+                FOREIGN KEY (default_address_id)
+                REFERENCES addresses(id);
+              
+              -- Har bir foydalanuvchining faqat bitta sozlamasi bo'lishini ta'minlash uchun UNIQUE KEY
+              -- Bu One-to-One munosabatini ma'lumotlar bazasi darajasida kafolatlaydi.
+              ALTER TABLE user_settings
+                ADD CONSTRAINT uk_user_settings_on_user_id UNIQUE (user_id);

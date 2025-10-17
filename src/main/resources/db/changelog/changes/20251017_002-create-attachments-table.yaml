@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_002 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: attachments
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Attachment entity'sining o'z ustunlari
+              - column:
+                  name: original_file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type # Bu enum, lekin CHECK'siz
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(255)
+              - column:
+                  name: size
+                  type: bigint
+              - column:
+                  name: bucket_name
+                  type: varchar(255)
+              - column:
+                  name: object_key
+                  type: varchar(255)
+              - column:
+                  name: telegram_file_id
+                  type: varchar(255)
+              - column:
+                  name: telegram_message_id
+                  type: int

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I18n Boshqaruv Paneli</title>
+    <link rel="stylesheet" href="/i18n/i18n.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>I18n Boshqaruv Paneli</h1>
+        <nav>
+            <button id="nav-languages" class="nav-btn active">Tillar</button>
+            <button id="nav-keys" class="nav-btn">Kalitlar</button>
+            <button id="nav-translations" class="nav-btn">Tarjimalar</button>
+        </nav>
+    </header>
+
+    <!-- Tillar uchun bo'lim -->
+    <main id="languages-view" class="view active">
+        <div class="view-header">
+            <h2>Tillar Ro'yxati</h2>
+            <button id="show-language-modal" class="btn btn-primary">Yangi Til Qo'shish</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th><th>Kod</th><th>Nomi</th><th>Status</th><th>Standart</th><th>Amallar</th>
+            </tr>
+            </thead>
+            <tbody id="languages-table-body"></tbody>
+        </table>
+    </main>
+
+    <!-- Kalitlar uchun bo'lim -->
+    <main id="keys-view" class="view">
+        <div class="view-header">
+            <h2>Kalitlar Ro'yxati</h2>
+            <button id="show-key-modal" class="btn btn-primary">Yangi Kalit Qo'shish</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th><th>Kalit</th><th>Izoh</th><th>Amallar</th>
+            </tr>
+            </thead>
+            <tbody id="keys-table-body"></tbody>
+        </table>
+    </main>
+
+    <!-- Tarjimalar uchun bo'lim -->
+    <main id="translations-view" class="view">
+        <div class="view-header">
+            <h2>Tarjimalar Ro'yxati</h2>
+            <button id="show-translation-modal" class="btn btn-primary">Yangi Tarjima Qo'shish</button>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th><th>Til</th><th>Kalit</th><th>Tarjima Matni</th><th>Amallar</th>
+            </tr>
+            </thead>
+            <tbody id="translations-table-body"></tbody>
+        </table>
+    </main>
+</div>
+
+<!-- ===== MODAL OYNALAR ===== -->
+
+<!-- Til yaratish/tahrirlash uchun -->
+<dialog id="language-modal">
+    <form id="language-form">
+        <h3 id="language-modal-title">Yangi Til</h3>
+        <input type="hidden" id="language-id">
+        <div class="form-group">
+            <label for="language-code">Kod (masalan, 'uz')</label>
+            <input type="text" id="language-code" required>
+        </div>
+        <div class="form-group">
+            <label for="language-name">Nomi (masalan, "O'zbekcha")</label>
+            <input type="text" id="language-name" required>
+        </div>
+        <div class="form-group form-group-checkbox">
+            <input type="checkbox" id="language-active" checked>
+            <label for="language-active">Aktiv</label>
+        </div>
+        <div class="form-group form-group-checkbox">
+            <input type="checkbox" id="language-default">
+            <label for="language-default">Standart til</label>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn cancel-modal">Bekor qilish</button>
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- Kalit yaratish/tahrirlash uchun -->
+<dialog id="key-modal">
+    <form id="key-form">
+        <h3 id="key-modal-title">Yangi Kalit</h3>
+        <input type="hidden" id="key-id">
+        <div class="form-group">
+            <label for="key-code">Kalit (masalan, 'button.save')</label>
+            <input type="text" id="key-code" required>
+        </div>
+        <div class="form-group">
+            <label for="key-description">Izoh</label>
+            <textarea id="key-description" rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn cancel-modal">Bekor qilish</button>
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- Yagona tarjima yaratish/tahrirlash uchun -->
+<dialog id="translation-modal">
+    <form id="translation-form">
+        <h3 id="translation-modal-title">Yangi Tarjima</h3>
+        <input type="hidden" id="translation-id">
+        <div class="form-group">
+            <label for="translation-language">Til</label>
+            <select id="translation-language" required></select>
+        </div>
+        <div class="form-group">
+            <label for="translation-key">Kalit</label>
+            <select id="translation-key" required></select>
+        </div>
+        <div class="form-group">
+            <label for="translation-text">Tarjima matni</label>
+            <textarea id="translation-text" rows="4" required></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn cancel-modal">Bekor qilish</button>
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- BARCHA TILLAR UCHUN TARJIMA QO'SHISH (YANGI OYNA) -->
+<dialog id="bulk-translation-modal">
+    <form id="bulk-translation-form">
+        <h3 id="bulk-translation-modal-title">Kalit uchun Tarjimalar</h3>
+        <input type="hidden" id="bulk-translation-key-id">
+
+        <div id="bulk-translation-fields">
+            <!-- Bu yerga tarjima maydonlari JS orqali dinamik qo'shiladi -->
+        </div>
+
+        <div class="form-actions">
+            <button type="button" class="btn cancel-modal">Bekor qilish</button>
+            <button type="submit" class="btn btn-primary">Barchasini Saqlash</button>
+        </div>
+    </form>
+</dialog>
+
+<div id="loader" class="loader-hidden"></div>
+
+<script src="/i18n/i18n.js"></script>
+</body>
+</html>

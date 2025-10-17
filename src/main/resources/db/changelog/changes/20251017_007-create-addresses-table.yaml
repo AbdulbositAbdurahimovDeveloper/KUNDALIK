@@ -1,0 +1,74 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_007 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: addresses
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Address entity'sining o'z ustunlari
+              - column:
+                  name: address_name
+                  type: varchar(100)
+              - column:
+                  name: country
+                  type: varchar(100)
+              - column:
+                  name: region
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: district
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street_and_house
+                  type: varchar(255)
+              - column:
+                  name: landmark
+                  type: varchar(255)
+              - column:
+                  name: latitude
+                  type: double precision
+              - column:
+                  name: longitude
+                  type: double precision
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Manzilni foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE addresses
+                ADD CONSTRAINT fk_addresses_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

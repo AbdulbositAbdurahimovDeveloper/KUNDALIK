@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_006 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: accounts
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Account entity'sining o'z ustunlari
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: account_type
+                  type: varchar(50) # Masalan, 'CASH', 'BANK_CARD' uchun
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency_code
+                  type: varchar(10) # 'UZS', 'USD' kabi kodlar uchun
+                  constraints:
+                    nullable: false
+              - column:
+                  name: initial_balance
+                  type: numeric(18, 2)
+                  defaultValueNumeric: 0.00
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni (FOREIGN KEY) toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Hisobni foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE accounts
+                ADD CONSTRAINT fk_accounts_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);

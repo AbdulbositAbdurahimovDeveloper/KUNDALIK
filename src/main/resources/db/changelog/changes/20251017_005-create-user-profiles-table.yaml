@@ -1,0 +1,86 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_005 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: user_profiles
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # UserProfile entity'sining o'z ustunlari
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gender
+                  type: varchar(10) # 'MALE', 'FEMALE' uchun yetarli
+              - column:
+                  name: birth_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number # YANGI USTUN
+                  type: varchar(255)
+              - column:
+                  name: profile_picture_id
+                  type: bigint
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Barcha murakkab cheklovlarni toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Profilni foydalanuvchiga bog'lash uchun FOREIGN KEY
+              ALTER TABLE user_profiles
+                ADD CONSTRAINT fk_user_profiles_on_user
+                FOREIGN KEY (user_id)
+                REFERENCES users(id);
+              
+              -- Profilni rasmga bog'lash uchun FOREIGN KEY
+              ALTER TABLE user_profiles
+                ADD CONSTRAINT fk_user_profiles_on_attachment
+                FOREIGN KEY (profile_picture_id)
+                REFERENCES attachments(id);
+              
+              -- Har bir foydalanuvchining faqat bitta profili bo'lishini ta'minlash uchun UNIQUE KEY
+              -- Bu One-to-One munosabatini ma'lumotlar bazasi darajasida kafolatlaydi.
+              ALTER TABLE user_profiles
+                ADD CONSTRAINT uk_user_profiles_on_user_id UNIQUE (user_id);
+              
+              -- Har bir rasm faqat bitta profilga tegishli bo'lishini ta'minlash uchun UNIQUE KEY
+              -- Bu ham One-to-One munosabatini kafolatlaydi.
+              ALTER TABLE user_profiles
+                ADD CONSTRAINT uk_user_profiles_on_profile_picture_id UNIQUE (profile_picture_id);

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: KUNDALIK
+
+  profiles:
+    active: dev
+
+  banner:
+    location: classpath:banner.txt

@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_018
+      author: abdulbosit
+      changes:
+        - createTable:
+            tableName: user_settings
+            columns:
+              - column: { name: id, type: bigint, autoIncrement: true, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: user_id, type: bigint, constraints: { nullable: false } }
+              - column: { name: updated_at, type: timestamp(6) }
+
+              # --- Manzil Sozlamalari ---
+              - column: { name: default_address_id, type: bigint }
+
+              # --- Bildirishnoma Sozlamalari ---
+              - column: { name: notification_level, type: varchar(20), defaultValue: 'ALL' }
+              - column: { name: do_not_disturb_start, type: time }
+              - column: { name: do_not_disturb_end, type: time }
+
+              # --- Moliya Sozlamalari ---
+              - column: { name: default_expense_account_id, type: bigint }
+              - column: { name: default_income_account_id, type: bigint }
+              - column: { name: financial_month_start_day, type: int, defaultValueNumeric: 1 }
+
+              # --- Interfeys Sozlamalari ---
+              - column: { name: preferred_theme, type: varchar(20), defaultValue: 'SYSTEM_DEFAULT' }
+              - column: { name: preferred_date_format, type: varchar(20), defaultValue: 'DD.MM.YYYY' }
+
+        - sql:
+            sql: |
+              ALTER TABLE user_settings ADD CONSTRAINT fk_user_settings_on_user FOREIGN KEY (user_id) REFERENCES users(id);
+              ALTER TABLE user_settings ADD CONSTRAINT uk_user_settings_on_user_id UNIQUE (user_id);
+              ALTER TABLE user_settings ADD CONSTRAINT fk_user_settings_on_address FOREIGN KEY (default_address_id) REFERENCES addresses(id);
+              ALTER TABLE user_settings ADD CONSTRAINT fk_user_settings_on_def_exp_acc FOREIGN KEY (default_expense_account_id) REFERENCES accounts(id);
+              ALTER TABLE user_settings ADD CONSTRAINT fk_user_settings_on_def_inc_acc FOREIGN KEY (default_income_account_id) REFERENCES accounts(id);

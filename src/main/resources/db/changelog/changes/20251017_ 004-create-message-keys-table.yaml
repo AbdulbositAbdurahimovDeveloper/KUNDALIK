@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_004 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: message_keys
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # MessageKey entity'sining o'z ustunlari
+              - column:
+                  name: key
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+
+        # 2-QISM: Murakkab cheklovlarni, jumladan, QISMAN UNIKAL INDEKSNI toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- "key" ustunining noyobligini faqat o'chirilmagan (deleted = false) yozuvlar uchun ta'minlaydigan
+              -- QISMAN (PARTIAL) UNIKAL INDEKS yaratamiz.
+              CREATE UNIQUE INDEX uk_message_keys_on_key_when_not_deleted
+              ON message_keys (key)
+              WHERE deleted = false;

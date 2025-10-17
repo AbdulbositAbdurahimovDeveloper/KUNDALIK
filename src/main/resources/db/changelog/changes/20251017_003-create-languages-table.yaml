@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251017_003 # Fayl nomiga mos ID
+      author: abdulbosit
+
+      # 1-QISM: Jadval va uning asosiy ustunlarini YAML formatida yaratamiz.
+      changes:
+        - createTable:
+            tableName: languages
+            columns:
+              # AbsAuditingSoftDeleteEntity'dan keladigan ustunlar
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp(6)
+              - column:
+                  name: updated_at
+                  type: timestamp(6)
+              - column:
+                  name: deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+              # Language entity'sining o'z ustunlari
+              - column:
+                  name: code
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_default
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+        # 2-QISM: Murakkab cheklovlarni, jumladan, QISMAN UNIKAL INDEKSNI toza SQL formatida qo'shamiz.
+        - sql:
+            sql: |
+              -- Til kodining noyobligini faqat o'chirilmagan (deleted = false) yozuvlar uchun ta'minlaydigan
+              -- QISMAN (PARTIAL) UNIKAL INDEKS yaratamiz.
+              CREATE UNIQUE INDEX uk_languages_on_code_when_not_deleted
+              ON languages (code)
+              WHERE deleted = false;

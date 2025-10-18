@@ -13,8 +13,8 @@ public class TelegramService {
     private final String channelId;
 
     public TelegramService(WebClient.Builder webClientBuilder,
-                           @Value("${telegram.bot.token}") String botToken,
-                           @Value("${telegram.bot.channel-id}") String channelId) {
+                           @Value("${application.telegram.bot.token}") String botToken,
+                           @Value("${application.telegram.bot.channel-id}") String channelId) {
         this.webClient = webClientBuilder.baseUrl("https://api.telegram.org").build();
         this.botToken = botToken;
         this.channelId = channelId;

@@ -1,10 +1,8 @@
-package uz.kundalik.telegram.service;
+package uz.kundalik.telegram.service.panel.user;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
-import uz.kundalik.telegram.enums.UserState;
 
 public interface TelegramUserService {
-    void updateUserState(Long chatId, UserState userState);
 
     void onUpdateResave(Update update);
 

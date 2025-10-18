@@ -47,8 +47,9 @@ springdoc:
 
 application:
   site:
-    backend-base-url: "http://localhost:8080"
-    frontend-base-url: "http://localhost:8080"
+    backend-base-url: ${BACKEND_BASE_URL}
+    frontend-base-url: ${FRONTEND_BASE_URL}
+
   jwt:
     secret: ${JWT_SECRET_KEY}
     access-token-expiration: ${ACCESS_TOKEN_EXPIRATION}
@@ -63,19 +64,49 @@ application:
       - other
       - icons
 
-telegram:
-  bot:
-    token: ${TELEGRAM_BOT_TOKEN}
-    username: ${TELEGRAM_BOT_USERNAME}
-    webhook-path: ${TELEGRAM_BOT_PATH}
-    chat-id: ${TELEGRAM_CHAT_ID}
-    channel-id: ${TELEGRAM_BOT_CHANNEL}
+  telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN}
+      username: ${TELEGRAM_BOT_USERNAME}
+      webhook-path: ${TELEGRAM_BOT_PATH}
+      chat-id: ${TELEGRAM_CHAT_ID}
+      channel-id: ${TELEGRAM_BOT_CHANNEL}
 
-eskiz:
-  api:
-    url: ${ESKIZ_URL}
-    email: ${ESKIZ_EMAIL}
-    token: ${ESKIZ_TOKEN}
-  sms:
-    text: "Sizning tasdiqlash kodingiz: {code}"
-  test-mode: true   # 🔥 test rejim da true, production da false
+  eskiz:
+    api:
+      url: ${ESKIZ_URL}
+      email: ${ESKIZ_EMAIL}
+      token: ${ESKIZ_TOKEN}
+    sms:
+      text: ${ESKIZ_SMS_TEXT}
+    test-mode: true # This flag enables test mode for Eskiz SMS sending
+
+  weather:
+    api-keys:
+      - ${WEATHER_API_KEY_1}
+      - ${WEATHER_API_KEY_2}
+    base-url: ${WEATHER_BASE_URL:https://api.weatherapi.com/v1}
+    endpoints:
+      forecast: /forecast.json
+    default-days: ${WEATHER_DEFAULT_DAYS}
+    default-city: ${WEATHER_DEFAULT_CITY}
+
+  prayer:
+    base-url: ${PRAYER_BASE_URL:https://islomapi.uz/api}
+    endpoints:
+      week: /present/week/{region}
+      day: /present/day/{region}
+    default-city: ${PRAYER_DEFAULT_CITY}
+
+  currency:
+    base-url: ${CURRENCY_API_URL:https://cbu.uz/uz/arkhiv-kursov-valyut}
+    endpoints:
+      all-rates: /json/
+#  prayer:
+#    api-week-url: ${PRAYER_WEEK_API_URL}
+#    api-day-url: ${PRAYER_DAY_API_URL}
+#    default-city: ${PRAYER_DEFAULT_CITY}
+#
+#  currency:
+#    api-url: ${CURRENCY_API_URL}
+#    api-key: ${CURRENCY_API_KEY}

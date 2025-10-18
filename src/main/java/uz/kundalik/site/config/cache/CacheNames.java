@@ -32,8 +32,11 @@ public final class CacheNames {
      */
     public static final String TELEGRAM_BOT = PREFIX + "telegram_bot";
 
-    // You can add more caches here in the future
-    // public static final String ESTABLISHMENTS = PREFIX + "establishments";
+    public static final String WEATHER = PREFIX + "weather";
+
+    public static final String PRAYER_DAY = PREFIX + "prayer_day";
+
+    public static final String PRAYER_WEEK = PREFIX + "prayer_week";
 
     private CacheNames() {
         // Private constructor to prevent instantiation

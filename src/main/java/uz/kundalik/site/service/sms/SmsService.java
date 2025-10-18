@@ -19,9 +19,9 @@ public class SmsService {
     private final boolean testMode;
 
     public SmsService(WebClient.Builder webClientBuilder,
-                      @Value("${eskiz.api.url}") String eskizApiUrl,
-                      @Value("${eskiz.api.token}") String eskizToken,
-                      @Value("${eskiz.test-mode:true}") boolean testMode,
+                      @Value("${application.eskiz.api.url}") String eskizApiUrl,
+                      @Value("${application.eskiz.api.token}") String eskizToken,
+                      @Value("${application.eskiz.test-mode:true}") boolean testMode,
                       TelegramService telegramService) {
         this.webClient = webClientBuilder.build();
         this.eskizApiUrl = eskizApiUrl;

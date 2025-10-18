@@ -35,4 +35,19 @@ public interface Utils {
         String CONFIRM = "confirm";
 
     }
+
+    interface InlineButtons {
+
+        String PAGINATION_PREVIOUS_TEXT = "⬅️ Oldingi";
+        String PAGINATION_NEXT_TEXT = "Keyingi ➡️";
+
+    }
+
+    interface Action {
+
+        String ACTION_LIST = "l";
+
+
+        String ACTION_PAGE = "page";
+    }
 }

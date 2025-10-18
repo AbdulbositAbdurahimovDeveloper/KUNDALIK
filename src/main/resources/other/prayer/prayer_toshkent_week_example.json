@@ -1,0 +1,121 @@
+[
+  {
+    "region": "Toshkent",
+    "date": "13/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 20
+    },
+    "weekday": "Dushanba",
+    "times": {
+      "tong_saharlik": "05:14",
+      "quyosh": "06:32",
+      "peshin": "12:09",
+      "asr": "16:02",
+      "shom_iftor": "17:48",
+      "hufton": "19:04"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "14/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 21
+    },
+    "weekday": "Seshanba",
+    "times": {
+      "tong_saharlik": "05:15",
+      "quyosh": "06:34",
+      "peshin": "12:09",
+      "asr": "16:00",
+      "shom_iftor": "17:47",
+      "hufton": "19:02"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "15/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 22
+    },
+    "weekday": "Chorshanba",
+    "times": {
+      "tong_saharlik": "05:16",
+      "quyosh": "06:35",
+      "peshin": "12:09",
+      "asr": "15:59",
+      "shom_iftor": "17:45",
+      "hufton": "19:01"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "16/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 23
+    },
+    "weekday": "Payshanba",
+    "times": {
+      "tong_saharlik": "05:17",
+      "quyosh": "06:36",
+      "peshin": "12:09",
+      "asr": "15:58",
+      "shom_iftor": "17:44",
+      "hufton": "18:59"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "17/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 24
+    },
+    "weekday": "Juma",
+    "times": {
+      "tong_saharlik": "05:18",
+      "quyosh": "06:37",
+      "peshin": "12:08",
+      "asr": "15:56",
+      "shom_iftor": "17:42",
+      "hufton": "18:58"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "18/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 25
+    },
+    "weekday": "Shanba",
+    "times": {
+      "tong_saharlik": "05:19",
+      "quyosh": "06:38",
+      "peshin": "12:08",
+      "asr": "15:55",
+      "shom_iftor": "17:41",
+      "hufton": "18:56"
+    }
+  },
+  {
+    "region": "Toshkent",
+    "date": "19/10/2025, 00:00:00",
+    "hijri_date": {
+      "month": "rabi'us soni / jumadul avval",
+      "day": 26
+    },
+    "weekday": "Yakshanba",
+    "times": {
+      "tong_saharlik": "05:20",
+      "quyosh": "06:39",
+      "peshin": "12:08",
+      "asr": "15:53",
+      "shom_iftor": "17:39",
+      "hufton": "18:55"
+    }
+  }
+]

@@ -24,13 +24,13 @@ import java.io.Serializable;
 public class KundalikBot extends TelegramWebhookBot {
 
 
-    @Value("${telegram.bot.username}")
+    @Value("${application.telegram.bot.username}")
     private String botUsername;
 
-    @Value("${telegram.bot.token}")
+    @Value("${application.telegram.bot.token}")
     private String botToken;
 
-    @Value("${telegram.bot.webhook-path}")
+    @Value("${application.telegram.bot.webhook-path}")
     private String botPath;
 
     // --- Service Dependencies ---

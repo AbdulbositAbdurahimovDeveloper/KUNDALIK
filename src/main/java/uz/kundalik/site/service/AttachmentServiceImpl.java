@@ -14,6 +14,7 @@ import uz.kundalik.site.model.Attachment;
 import uz.kundalik.site.payload.attachment.AttachmentCreatedResponseDTO;
 import uz.kundalik.site.payload.attachment.AttachmentDetailDTO;
 import uz.kundalik.site.payload.attachment.VideoRegisterDTO;
+import uz.kundalik.site.properties.ApplicationProperties;
 import uz.kundalik.site.properties.MinioProperties;
 import uz.kundalik.site.repository.AttachmentRepository;
 import uz.kundalik.site.service.minio.MinioService;
@@ -31,7 +32,11 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final AttachmentRepository attachmentRepository;
     private final AttachmentMapper attachmentMapper;
     private final MinioService minioService;
-    private final MinioProperties minioProperties;
+    private final ApplicationProperties applicationProperties;
+
+    private MinioProperties minioProperties() {
+        return applicationProperties.getMinio();
+    }
 
     /**
      * Retrieves detailed information about an attachment by its ID,
@@ -64,7 +69,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .type(AttachmentType.IMAGE)
                 .originalFileName(originalFileName)
                 .objectKey(objectKey)
-                .bucketName(minioProperties.getBuckets().get(0))
+                .bucketName(minioProperties().getBuckets().get(0))
                 .contentType(file.getContentType())
                 .size(file.getSize())
                 .build();
@@ -131,7 +136,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 .type(AttachmentType.IMAGE)
                 .originalFileName(originalFileName)
                 .objectKey(objectKey)
-                .bucketName(minioProperties.getBuckets().get(0))
+                .bucketName(minioProperties().getBuckets().get(0))
                 .contentType(file.getContentType())
                 .size(file.getSize())
                 .build();

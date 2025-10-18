@@ -1,16 +1,9 @@
 package uz.kundalik.site.properties;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
+import lombok.Data;
 import java.util.List;
 
-@ConfigurationProperties(prefix = "application.minio")
-@Component
-@Getter
-@Setter
+@Data
 public class MinioProperties {
     private String endpoint;
     private String accessKey;

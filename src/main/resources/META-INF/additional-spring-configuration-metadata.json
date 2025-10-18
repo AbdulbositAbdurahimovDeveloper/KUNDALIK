@@ -1,0 +1,109 @@
+{
+  "properties": [
+    {
+      "name": "application.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for application.jwt.secret."
+    },
+    {
+      "name": "application.jwt.access-token-expiration",
+      "type": "java.lang.String",
+      "description": "Description for application.jwt.access-token-expiration."
+    },
+    {
+      "name": "application.jwt.refresh-token-expiration",
+      "type": "java.lang.String",
+      "description": "Description for application.jwt.refresh-token-expiration."
+    },
+    {
+      "name": "application.minio.endpoint",
+      "type": "java.lang.String",
+      "description": "Description for application.minio.endpoint."
+    },
+    {
+      "name": "application.minio.access-key",
+      "type": "java.lang.String",
+      "description": "Description for application.minio.access-key."
+    },
+    {
+      "name": "application.minio.secret-key",
+      "type": "java.lang.String",
+      "description": "Description for application.minio.secret-key."
+    },
+    {
+      "name": "application.minio.buckets",
+      "type": "java.lang.String",
+      "description": "Description for application.minio.buckets."
+    },
+    {
+      "name": "application.telegram.bot.token",
+      "type": "java.lang.String",
+      "description": "Description for application.telegram.bot.token."
+    },
+    {
+      "name": "application.telegram.bot.username",
+      "type": "java.lang.String",
+      "description": "Description for application.telegram.bot.username."
+    },
+    {
+      "name": "application.telegram.bot.webhook-path",
+      "type": "java.lang.String",
+      "description": "Description for application.telegram.bot.webhook-path."
+    },
+    {
+      "name": "application.telegram.bot.chat-id",
+      "type": "java.lang.String",
+      "description": "Description for application.telegram.bot.chat-id."
+    },
+    {
+      "name": "application.telegram.bot.channel-id",
+      "type": "java.lang.String",
+      "description": "Description for application.telegram.bot.channel-id."
+    },
+    {
+      "name": "application.eskiz.api.url",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.api.url."
+    },
+    {
+      "name": "application.eskiz.api.email",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.api.email."
+    },
+    {
+      "name": "application.eskiz.api.token",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.api.token."
+    },
+    {
+      "name": "application.eskiz.sms.text",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.sms.text."
+    },
+    {
+      "name": "application.eskiz.test-mode",
+      "type": "java.lang.Boolean",
+      "description": "Description for application.eskiz.test-mode."
+    },
+    {
+      "name": "application.eskiz.weather.api-keys",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.weather.api-keys."
+    },
+    {
+      "name": "application.eskiz.weather.base-url",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.weather.base-url."
+    },
+    {
+      "name": "application.eskiz.weather.default-days",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.weather.default-days."
+    },
+    {
+      "name": "application.eskiz.weather.default-city",
+      "type": "java.lang.String",
+      "description": "Description for application.eskiz.weather.default-city."
+    }
+  ]
+}

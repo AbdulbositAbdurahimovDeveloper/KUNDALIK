@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import uz.kundalik.site.model.User;
+import uz.kundalik.site.properties.ApplicationProperties;
 import uz.kundalik.site.properties.JwtProperties;
 
 import java.security.Key;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    private final JwtProperties jwtProperties;
+    private final ApplicationProperties applicationProperties;
     private Key signingKey;
 
     /**
@@ -39,7 +40,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
+        byte[] keyBytes = Decoders.BASE64.decode(applicationProperties.getJwt().getSecret());
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -77,7 +78,7 @@ public class JwtServiceImpl implements JwtService {
             extraClaims.put("profileId", user.getProfile().getId());
         }
 
-        return buildToken(extraClaims, userDetails, jwtProperties.getAccessTokenExpiration());
+        return buildToken(extraClaims, userDetails, applicationProperties.getJwt().getAccessTokenExpiration());
     }
 
     /**
@@ -86,7 +87,7 @@ public class JwtServiceImpl implements JwtService {
      */
     @Override
     public String generateRefreshToken(UserDetails userDetails) {
-        return buildToken(new HashMap<>(), userDetails, jwtProperties.getRefreshTokenExpiration());
+        return buildToken(new HashMap<>(), userDetails, applicationProperties.getJwt().getRefreshTokenExpiration());
     }
 
     /**

@@ -26,6 +26,7 @@ import java.util.Map;
 public class CacheConfig {
 
     // BU METOD ENDI @Bean EMAS, PRIVATE HELPER METHOD!
+
     /**
      * Creates a specialized ObjectMapper instance specifically for Redis serialization.
      * This ObjectMapper is NOT exposed as a global bean to avoid interfering with
@@ -53,11 +54,17 @@ public class CacheConfig {
         final Duration userCacheTtl = Duration.ofMinutes(10);
         final Duration languageCacheTtl = Duration.ofHours(1);
         final Duration botCacheTtl = Duration.ofHours(1);
+        final Duration weatherCacheTtl = Duration.ofMinutes(30);
+        final Duration prayerCacheDayTtl = Duration.ofDays(1);
+        final Duration prayerCacheWeekTtl = Duration.ofDays(7);
 
         Map<String, RedisCacheConfiguration> initialCacheConfigurations = new HashMap<>();
         initialCacheConfigurations.put(CacheNames.USERS, createCacheConfiguration(userCacheTtl, jsonRedisSerializer));
         initialCacheConfigurations.put(CacheNames.LANGUAGES, createCacheConfiguration(languageCacheTtl, jsonRedisSerializer));
         initialCacheConfigurations.put(CacheNames.TELEGRAM_BOT, createCacheConfiguration(botCacheTtl, jsonRedisSerializer));
+        initialCacheConfigurations.put(CacheNames.WEATHER, createCacheConfiguration(weatherCacheTtl, jsonRedisSerializer));
+        initialCacheConfigurations.put(CacheNames.PRAYER_DAY, createCacheConfiguration(prayerCacheDayTtl, jsonRedisSerializer));
+        initialCacheConfigurations.put(CacheNames.PRAYER_WEEK, createCacheConfiguration(prayerCacheWeekTtl, jsonRedisSerializer));
 
         RedisCacheConfiguration defaultConfig = createCacheConfiguration(Duration.ofMinutes(5), jsonRedisSerializer);
 

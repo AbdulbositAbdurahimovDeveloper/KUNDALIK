@@ -1,19 +1,15 @@
 package uz.kundalik.telegram.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.kundalik.telegram.enums.UserState;
 
 @Service
-public class TelegramUserServiceImpl implements TelegramUserService{
+@RequiredArgsConstructor
+public class UserStateServiceImpl implements  UserStateService {
 
     @Override
     public void updateUserState(Long chatId, UserState userState) {
-
-    }
-
-    @Override
-    public void onUpdateResave(Update update) {
 
     }
 }

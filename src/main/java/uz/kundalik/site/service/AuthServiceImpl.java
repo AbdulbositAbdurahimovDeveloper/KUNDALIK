@@ -34,6 +34,7 @@ import uz.kundalik.site.payload.user.ForgotPasswordRequestDTO;
 import uz.kundalik.site.payload.user.UserRegisterRequestDTO;
 import uz.kundalik.site.payload.user.UserRegisterResponseDTO;
 import uz.kundalik.site.payload.user.VerifyCodeRequestDTO;
+import uz.kundalik.site.properties.ApplicationProperties;
 import uz.kundalik.site.properties.JwtProperties;
 import uz.kundalik.site.repository.UserRepository;
 import uz.kundalik.site.repository.VerificationTokenRepository;
@@ -59,14 +60,16 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final JwtProperties jwtProperties;
+    private final ApplicationProperties applicationProperties;
     private final UserRepository userRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailService mailService;
-    private final SmsService smsService;
     private final ObjectMapper objectMapper;
     private final GenerateUniqueService generateUniqueService;
+
+    JwtProperties jwtProperties() {
+        return applicationProperties.getJwt();
+    }
 
     @Value("${application.security.verification.max-attempts:3}")
     Integer MAX_ATTEMPTS;
@@ -202,7 +205,7 @@ public class AuthServiceImpl implements AuthService {
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
 
-                    .expiresIn(jwtProperties.getAccessTokenExpiration().toSeconds())
+                    .expiresIn(jwtProperties().getAccessTokenExpiration().toSeconds())
                     .authorities(user.getAuthorities().stream()
                             .map(GrantedAuthority::getAuthority)
                             .collect(Collectors.toSet()))
@@ -245,7 +248,7 @@ public class AuthServiceImpl implements AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
 
-                .expiresIn(jwtProperties.getAccessTokenExpiration().toSeconds())
+                .expiresIn(jwtProperties().getAccessTokenExpiration().toSeconds())
                 .authorities(user.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toSet()))

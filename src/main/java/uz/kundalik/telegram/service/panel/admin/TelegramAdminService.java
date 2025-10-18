@@ -1,4 +1,4 @@
-package uz.kundalik.telegram.service;
+package uz.kundalik.telegram.service.panel.admin;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 

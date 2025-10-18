@@ -29,6 +29,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers(
+                                "/api/v1/test/**",
+
                                 "/admin-panel/**",
                                 "/i18n/**",
                                 "/auth.html",

@@ -10,10 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import uz.kundalik.site.config.logger.LoggingInterceptor;
+import uz.kundalik.site.properties.ApplicationProperties;
 import uz.kundalik.site.properties.MinioProperties;
 
 @Configuration
@@ -22,7 +24,11 @@ import uz.kundalik.site.properties.MinioProperties;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final LoggingInterceptor loggingInterceptor;
-    private final MinioProperties minio;
+    private final ApplicationProperties applicationProperties;
+
+    MinioProperties minio() {
+        return applicationProperties.getMinio();
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -42,15 +48,20 @@ public class WebMvcConfig implements WebMvcConfigurer {
         return validatorFactory().getValidator();
     }
 
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
 
     @Bean
     public MinioClient minioClient() throws Exception {
         MinioClient client = MinioClient.builder()
-                .endpoint(minio.getEndpoint())
-                .credentials(minio.getAccessKey(), minio.getSecretKey())
+                .endpoint(minio().getEndpoint())
+                .credentials(minio().getAccessKey(), minio().getSecretKey())
                 .build();
 
-        for (String bucket : minio.getBuckets()) {
+        for (String bucket : minio().getBuckets()) {
 
             BucketExistsArgs imaExistsArgs = BucketExistsArgs.builder().bucket(bucket).build();
             if (!client.bucketExists(imaExistsArgs)) {

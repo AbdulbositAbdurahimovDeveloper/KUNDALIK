@@ -5,7 +5,7 @@ FROM openjdk:21
 WORKDIR /app
 
 # 3-qadam: app.jar ni konteynerga ko‘chirish
-COPY app.jar kundalik_app.jar
+COPY app.jar app.jar
 
 # 4-qadam: Ilovani ishga tushirish
-ENTRYPOINT ["java", "-jar", "kundalik_app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

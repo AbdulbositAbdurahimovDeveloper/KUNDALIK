@@ -2,10 +2,16 @@
 FROM openjdk:21
 
 # 2-qadam: Ilova uchun ishchi katalog
-WORKDIR /app
+# WORKDIR /app
 
 # 3-qadam: app.jar ni konteynerga ko‘chirish
-COPY app.jar app.jar
+# COPY app.jar app.jar
 
 # 4-qadam: Ilovani ishga tushirish
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# ENTRYPOINT ["java", "-jar", "app.jar"]
+
+WORKDIR /app
+COPY target/*.jar kundalik.jar
+
+# 3-qadam: Ilovani ishga tushirish
+ENTRYPOINT ["java", "-jar", "kundalik.jar"]

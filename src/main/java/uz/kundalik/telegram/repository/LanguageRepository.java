@@ -5,13 +5,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import uz.kundalik.site.exception.EntityNotFoundException;
 import uz.kundalik.telegram.model.Language;
 
 import java.util.Optional;
 
 public interface LanguageRepository extends JpaRepository<Language, Long> {
     Optional<Language> findByCodeAndActiveTrue(String code);
+
     Optional<Language> findByDefaultLanguageTrue();
+
+    default Language findByDefaultLanguageTrueOrElseThrow() {
+        return findByDefaultLanguageTrue().orElseThrow(() -> new EntityNotFoundException("Language not found"));
+    }
 
     Optional<Language> findByCode(@NotBlank(message = "Language code is required") String languageCode);
 

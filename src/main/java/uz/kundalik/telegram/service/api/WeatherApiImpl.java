@@ -10,6 +10,13 @@ import uz.kundalik.site.properties.ApplicationProperties;
 import uz.kundalik.site.properties.WeatherProperties;
 import uz.kundalik.telegram.apiclient.WeatherApiClient;
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
+import uz.kundalik.telegram.payload.weather.current.CurrentDTO;
+import uz.kundalik.telegram.payload.weather.forecast.ForecastDayDTO;
+import uz.kundalik.telegram.payload.weather.location.LocationDTO;
+import uz.kundalik.telegram.payload.weather.search.LocationResponseDTO;
+import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
+import uz.kundalik.telegram.service.message.i18n;
+import uz.kundalik.telegram.utils.Utils;
 
 import java.util.List;
 
@@ -27,12 +34,14 @@ public class WeatherApiImpl implements WeatherApi {
 
     private final WeatherApiClient weatherApiClient;
     private final WeatherProperties weatherProperties;
+    private final i18n i18n;
     private int currentKeyIndex = 0;
 
     // Constructor Injection is handled by Spring, but we write it for clarity if not using Lombok.
-    public WeatherApiImpl(WeatherApiClient weatherApiClient, ApplicationProperties applicationProperties) {
+    public WeatherApiImpl(WeatherApiClient weatherApiClient, ApplicationProperties applicationProperties, i18n i18n) {
         this.weatherApiClient = weatherApiClient;
         this.weatherProperties = applicationProperties.getWeather();
+        this.i18n = i18n;
     }
 
     /**
@@ -59,15 +68,44 @@ public class WeatherApiImpl implements WeatherApi {
     }
 
     @Override
-    public WeatherResponseDTO info(String latitude, String longitude, int days) {
+    public WeatherResponseDTO info(Double latitude, Double longitude, int days) {
         String query = String.format("%s,%s", latitude, longitude);
         return getWeatherForecast(query, days);
     }
 
     @Override
-    public WeatherResponseDTO info(String latitude, String longitude) {
+    public WeatherResponseDTO info(Double latitude, Double longitude) {
         String query = String.format("%s,%s", latitude, longitude);
         return getWeatherForecast(query, weatherProperties.getDefaultDays());
+    }
+
+    @Override
+    public List<SearchLocationDTO> search(String query) {
+        return locationResponseDTO(query);
+    }
+
+
+    @Override
+    public String dayFormatter(WeatherResponseDTO weatherResponseDTO, String langCode) {
+        LocationDTO location = weatherResponseDTO.getLocation();
+        CurrentDTO current = weatherResponseDTO.getCurrent();
+        ForecastDayDTO forecastDayDTO = weatherResponseDTO.getForecast().getForecastDay().get(0);
+
+        return i18n.get(Utils.i18n.WEATHER_INFO, langCode).formatted(
+                location.getName(),
+                location.getLocaltime(),
+                current.getTempC(),
+                current.getFeelslikeC(),
+                current.getWindDir(),
+                current.getWindKph(),
+                current.getHumidity(),
+                current.getPressureMb(),
+                forecastDayDTO.getDay().getMaxTempC(),
+                forecastDayDTO.getDay().getMinTempC(),
+                forecastDayDTO.getDay().getDailyChanceOfRain(),
+                forecastDayDTO.getAstro().getSunrise(),
+                forecastDayDTO.getAstro().getSunset()
+        );
     }
 
     /**
@@ -91,6 +129,35 @@ public class WeatherApiImpl implements WeatherApi {
             try {
                 log.debug("Attempting to fetch weather with API key at index {}.", currentKeyIndex);
                 return weatherApiClient.getForecast(apiKey, query, days, "no", "no");
+            } catch (FeignException ex) {
+                log.warn("Weather API call failed with key at index {}. Status: {}. Rotating to next key.",
+                        currentKeyIndex, ex.status());
+                // Rotate to the next key
+                currentKeyIndex = (currentKeyIndex + 1) % keys.size();
+                // If we've tried all keys and returned to the start, break the loop
+                if (currentKeyIndex == initialKeyIndex) break;
+            } catch (Exception e) {
+                // For non-Feign exceptions (e.g., network issues)
+                throw new WeatherApiException("An unexpected error occurred while calling the Weather API: " + e.getMessage(), e);
+            }
+        }
+
+        // If the loop completes without returning, all keys have failed.
+        throw new WeatherApiException("All configured Weather API keys failed or are exhausted.");
+    }
+
+    private List<SearchLocationDTO> locationResponseDTO(String query) {
+        List<String> keys = weatherProperties.getApiKeys();
+        if (keys == null || keys.isEmpty()) {
+            throw new WeatherApiException("No Weather API keys have been configured.");
+        }
+
+        int initialKeyIndex = currentKeyIndex;
+        for (int i = 0; i < keys.size(); i++) {
+            String apiKey = keys.get(currentKeyIndex);
+            try {
+                log.debug("Attempting to fetch weather with API key at index {}.", currentKeyIndex);
+                return weatherApiClient.searchLocation(apiKey, query);
             } catch (FeignException ex) {
                 log.warn("Weather API call failed with key at index {}. Status: {}. Rotating to next key.",
                         currentKeyIndex, ex.status());

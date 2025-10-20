@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Represents a user in the system, adapted for multi-identifier authentication (email or phone number).
- *
+ * <p>
  * This entity implements {@link UserDetails} for Spring Security integration.
  * A user MUST have either an email or a phone number to register. This is enforced at the database
  * level with a CHECK constraint (e.g., CHECK (email IS NOT NULL OR phone_number IS NOT NULL)).
@@ -50,7 +50,7 @@ public class User extends AbsAuditingSoftDeleteEntity implements UserDetails {
      * The hashed password for the user. Cannot be null.
      */
 
-   @Column(nullable = false)
+    @Column(nullable = false)
     private String password;
 
     /**
@@ -80,6 +80,9 @@ public class User extends AbsAuditingSoftDeleteEntity implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Address> address;
 
     /**
      * The Telegram profile associated with this site user.

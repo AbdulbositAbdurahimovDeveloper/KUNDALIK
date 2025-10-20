@@ -1,5 +1,23 @@
 package uz.kundalik.telegram.enums;
 
 public enum UserState {
-    AUTHENTICATED, DEFAULT, NONE
+    NONE,
+    DEFAULT,
+    AUTHENTICATED,
+    AWAITING_LOCATION,
+
+    COMMAND_HELP,
+    COMMAND_START,
+    COMMAND_DASHBOARD,
+    BUTTON_WEATHER,
+    BUTTON_PRAYER,
+    BUTTON_CURRENCY,
+    BUTTON_NOTES,
+    BUTTON_REMINDER,
+    BUTTON_BIRTHDATE,
+    BUTTON_WALLET,
+    BUTTON_SETTINGS,
+
+
+    ;
 }

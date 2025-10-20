@@ -26,6 +26,12 @@ databaseChangeLog:
               - column:
                   name: language_id
                   type: bigint
+              - column:
+                  name: user_status
+                  type: varchar(20)
+                  defaultValue: 'ANONYMOUS'
+                  constraints:
+                    nullable: false
 
         # 2-QISM: Barcha murakkab cheklovlarni (UNIQUE, FOREIGN KEY) toza SQL formatida qo'shamiz.
         - sql:

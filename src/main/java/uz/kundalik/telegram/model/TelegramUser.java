@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import uz.kundalik.site.model.User;
 import uz.kundalik.telegram.enums.UserState;
+import uz.kundalik.telegram.enums.UserStatus;
 
 @Getter
 @Setter
@@ -21,6 +22,9 @@ public class TelegramUser {
 
     @Enumerated(EnumType.STRING)
     private UserState userState = UserState.NONE;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus = UserStatus.ANONYMOUS;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id")

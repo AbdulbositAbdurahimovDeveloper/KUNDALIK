@@ -10,6 +10,7 @@ import uz.kundalik.telegram.model.MessageTranslation;
 import uz.kundalik.telegram.repository.LanguageRepository;
 import uz.kundalik.telegram.repository.MessageKeyRepository;
 import uz.kundalik.telegram.repository.MessageTranslationRepository;
+import uz.kundalik.telegram.service.message.dev.I18nService;
 
 import java.util.Optional;
 
@@ -21,14 +22,20 @@ public class i18nImpl implements i18n {
     private final LanguageRepository languageRepository;
     private final MessageKeyRepository messageKeyRepository;
     private final MessageTranslationRepository messageTranslationRepository;
+    private final I18nService i18nService;
 
     /**
      * Xabarni tildagi tarjimasi bilan qaytaradi.
      * Agar mavjud bo‘lmasa, default tildagi versiyani yoki key nomini qaytaradi.
      */
     @Override
-    @Cacheable(value = "translations", key = "#key + '_' + #langCode")
+//    @Cacheable(value = "translations", key = "#key + '_' + #langCode")
     public String get(String key, String langCode) {
+//        return productionTranslate(key, langCode);
+        return i18nService.get(key, langCode);
+    }
+
+    private String productionTranslate(String key, String langCode) {
         // 1️⃣ Tilni topamiz
         Optional<Language> languageOpt = languageRepository.findByCodeAndActiveTrue(langCode);
         if (languageOpt.isEmpty()) {
@@ -54,7 +61,7 @@ public class i18nImpl implements i18n {
      * Default tildagi tarjimani qaytaradi yoki key nomini o‘zi.
      */
     @Override
-    @Cacheable(value = "translations", key = "#key + '_default'")
+//    @Cacheable(value = "translations", key = "#key + '_default'")
     public String getDefault(String key) {
         Optional<Language> defaultLangOpt = languageRepository.findByDefaultLanguageTrue();
         if (defaultLangOpt.isEmpty()) {

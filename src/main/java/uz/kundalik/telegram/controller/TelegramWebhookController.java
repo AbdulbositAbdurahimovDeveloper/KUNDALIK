@@ -3,6 +3,7 @@ package uz.kundalik.telegram.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +24,6 @@ import uz.kundalik.telegram.service.TelegramValidationService;
 
 @RestController
 @RequestMapping("/api/public/telegram")
-@RequiredArgsConstructor
 public class TelegramWebhookController {
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -36,6 +36,18 @@ public class TelegramWebhookController {
 
     @Value("${telegram.bot.token}")
     private String botToken;
+
+    public TelegramWebhookController(
+            @Lazy TelegramValidationService telegramValidationService,
+            @Lazy AuthService authService, UserService userService,
+            @Lazy TelegramUserRepository telegramUserRepository,
+            @Lazy UserRepository userRepository) {
+        this.telegramValidationService = telegramValidationService;
+        this.authService = authService;
+        this.userService = userService;
+        this.telegramUserRepository = telegramUserRepository;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping("/set-webhook")
     public ResponseEntity<String> setWebhook(@RequestParam String domain) {

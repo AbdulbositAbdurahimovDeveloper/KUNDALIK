@@ -19,7 +19,7 @@ RUN mvn clean package -DskipTests
 
 # ================= STAGE 2: Run =================
 # Faqat Java Runtime (JRE) bo'lgan kichik va xavfsiz image'dan foydalanamiz
-FROM openjdk:21-jre-slim
+FROM openjdk:21-slim 
 
 # Ilova uchun ishchi katalog
 WORKDIR /app

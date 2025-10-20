@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class TelegramValidationService {
 
-    @Value("${telegram.bot.token}")
+    @Value("${application.telegram.bot.token}")
     private String botToken;
 
     private final ObjectMapper objectMapper = new ObjectMapper();

@@ -1,5 +1,8 @@
 package uz.kundalik.site.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,13 +27,61 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // --- Registration ---
+    @Operation(
+            summary = "Register a new user",
+            description = "Creates a new user account and returns user details along with an access token."
+    )
     @PostMapping("/register")
     public ResponseEntity<ResponseDTO<UserRegisterResponseDTO>> registerUser(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Data required for user registration.",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Standard User Registration",
+                                            summary = "Example request for new user",
+                                            value = """
+                                                    {
+                                                      "email": "abdulbositabdurahimov@gmail.com",
+                                                      "password": "new_parol",
+                                                      "firstName": "Abdulbosit",
+                                                      "lastName": "Abdurahimov",
+                                                      "birthDate": "2006-03-25",
+                                                      "gender": "MALE"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(
+                                            name = "User Registration",
+                                            summary = "Example request for user",
+                                            value = """
+                                                    {
+                                                      "email": "abdulbositabdurahimov260@gmail.com",
+                                                      "password": "1234",
+                                                      "firstName": "Abdulbosit",
+                                                      "lastName": "Abdurahimov",
+                                                      "birthDate": "2006-03-25",
+                                                      "gender": "MALE"
+                                                    }
+                                                    """
+                                    )
+                            }
+                    )
+            )
             @Valid @RequestBody UserRegisterRequestDTO requestDTO) {
+
         UserRegisterResponseDTO userRegisterResponseDTO = authService.registerUser(requestDTO);
         return ResponseEntity.ok(ResponseDTO.success(userRegisterResponseDTO));
     }
+    // --- Registration ---
+//    @PostMapping("/register")
+//    public ResponseEntity<ResponseDTO<UserRegisterResponseDTO>> registerUser(
+//            @Valid @RequestBody UserRegisterRequestDTO requestDTO) {
+//        UserRegisterResponseDTO userRegisterResponseDTO = authService.registerUser(requestDTO);
+//        return ResponseEntity.ok(ResponseDTO.success(userRegisterResponseDTO));
+//    }
 
     // --- Verification (email yoki phone kodni tekshirish) ---
     @PostMapping("/verify")

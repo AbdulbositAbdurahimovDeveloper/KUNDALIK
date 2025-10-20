@@ -88,6 +88,7 @@ application:
     base-url: ${WEATHER_BASE_URL:https://api.weatherapi.com/v1}
     endpoints:
       forecast: /forecast.json
+      search: /search.json
     default-days: ${WEATHER_DEFAULT_DAYS}
     default-city: ${WEATHER_DEFAULT_CITY}
 

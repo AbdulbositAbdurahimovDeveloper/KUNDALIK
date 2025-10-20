@@ -7,13 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.kundalik.site.enums.Role;
 import uz.kundalik.telegram.enums.UserState;
+import uz.kundalik.telegram.enums.UserStatus;
 import uz.kundalik.telegram.model.TelegramUser;
 import uz.kundalik.telegram.repository.TelegramUserRepository;
 import uz.kundalik.telegram.service.*;
-import uz.kundalik.telegram.service.keybard.InlineKeyboardService;
-import uz.kundalik.telegram.service.message.SendMsg;
-import uz.kundalik.telegram.service.panel.admin.TelegramAdminService;
-import uz.kundalik.telegram.service.panel.user.TelegramUserService;
 import uz.kundalik.telegram.service.redirect.RedirectService;
 import uz.kundalik.telegram.utils.Utils;
 
@@ -47,23 +44,16 @@ public class UpdateDispatcherService {
         TelegramUser currentUser = telegramUserRepository.findByChatId(userChatId)
                 .orElse(null);
 
-//        if (Objects.isNull(currentUser) || Objects.isNull(currentUser.getSiteUser())) {
-//
-//            TelegramUser telegramUser = new TelegramUser();
-//            telegramUser.setChatId(userChatId);
-//            telegramUser.setUserState(UserState.AUTHENTICATED);
-//            telegramUserRepository.save(telegramUser);
-//            telegramUserRepository.flush();
-//
-//            String sendMessage = """
-//                    Assalomu alaykum! Botimizga xush kelibsiz.\s
-//
-//                    Iltimos, ro'yxatdan o'tish uchun quyidagi tugmani bosing.""";
-//            InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardService.welcomeFirstTime(userChatId);
-//            kundalikBot.myExecute(sendMsg.sendMessage(userChatId, sendMessage, inlineKeyboardMarkup));
-//            return;
-//
-//        }
+        if (Objects.isNull(currentUser)) {
+
+            TelegramUser telegramUser = new TelegramUser();
+            telegramUser.setChatId(userChatId);
+            telegramUser.setUserState(UserState.AUTHENTICATED);
+            telegramUser.setUserStatus(UserStatus.ANONYMOUS);
+            telegramUserRepository.save(telegramUser);
+            telegramUserRepository.flush();
+
+        }
 
         Long chatId = getUserChatId(update);
         Role currentRole = roleService.getUserRole(chatId);

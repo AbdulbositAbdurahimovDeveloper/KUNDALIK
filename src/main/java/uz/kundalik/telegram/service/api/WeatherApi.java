@@ -1,6 +1,10 @@
 package uz.kundalik.telegram.service.api;
 
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
+import uz.kundalik.telegram.payload.weather.search.LocationResponseDTO;
+import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
+
+import java.util.List;
 
 /**
  * A service interface for fetching weather forecast data.
@@ -48,7 +52,7 @@ public interface WeatherApi {
      * @param days The number of forecast days.
      * @return A {@link WeatherResponseDTO}.
      */
-    WeatherResponseDTO info(String latitude, String longitude, int days);
+    WeatherResponseDTO info(Double latitude, Double longitude, int days);
 
     /**
      * A convenience method to get the forecast for geographic coordinates using the default number of days.
@@ -57,5 +61,10 @@ public interface WeatherApi {
      * @param longitude The longitude.
      * @return A {@link WeatherResponseDTO}.
      */
-    WeatherResponseDTO info(String latitude, String longitude);
+    WeatherResponseDTO info(Double latitude, Double longitude);
+
+
+    List<SearchLocationDTO> search(String query);
+
+    String dayFormatter(WeatherResponseDTO weatherResponseDTO, String langCode);
 }

@@ -4,6 +4,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
+import uz.kundalik.telegram.payload.weather.search.LocationResponseDTO;
+import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
+
+import java.util.List;
 
 /**
  * A Feign client for interacting with the external Weather API.
@@ -43,5 +47,11 @@ public interface WeatherApiClient {
             @RequestParam("key") String apiKey,
             @RequestParam("q") String query,
             @RequestParam("days") int days
+    );
+
+    @GetMapping(value = "${application.weather.endpoints.search}")
+    List<SearchLocationDTO> searchLocation(
+            @RequestParam("key") String apiKey,
+            @RequestParam("q") String query
     );
 }

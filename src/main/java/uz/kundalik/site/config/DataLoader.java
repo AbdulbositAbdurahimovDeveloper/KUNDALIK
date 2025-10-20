@@ -5,6 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.kundalik.site.enums.Gender;
+import uz.kundalik.site.enums.Role;
+import uz.kundalik.site.model.User;
+import uz.kundalik.site.model.UserProfile;
+import uz.kundalik.site.repository.UserRepository;
 
 import java.time.LocalDate;
 
@@ -24,8 +29,31 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
 
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+
     @Override
     public void run(String... args) throws Exception {
+
+        User user = new User();
+        user.setEmail("abdulbositabdurahimov260@gmail.com");
+        user.setPassword(passwordEncoder.encode("1234"));
+        user.setEnabled(true);
+        user.setRole(Role.ADMIN);
+        user.setProfile(new UserProfile(
+                "Abdulbosit",
+                "Abdurahimov",
+                Gender.MALE,
+                LocalDate.of(2006, 3, 25),
+                "+998931968377",
+                null,
+                user
+        ));
+
+        userRepository.save(user);
+
+        System.out.println("User Created");
+
 
     }
 }

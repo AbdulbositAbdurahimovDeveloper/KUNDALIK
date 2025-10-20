@@ -1,0 +1,105 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/kundalik_db
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  liquibase:
+    analytics-enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    default-schema: public
+
+
+  data:
+    redis:
+      host: ${KUNDALIK_SERVER_IP}
+      port: ${KUNDALIK_REDIS_PORT}
+      password: ${KUNDALIK_REDIS_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${KUNDALIK_MAIL_USERNAME}
+    password: ${KUNDALIK_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+
+application:
+  site:
+    backend-base-url: ${KUNDALIK_BACKEND_BASE_URL}
+    frontend-base-url: ${KUNDALIK_FRONTEND_BASE_URL}
+
+  jwt:
+    secret: ${KUNDALIK_JWT_SECRET_KEY}
+    access-token-expiration: ${KUNDALIK_ACCESS_TOKEN_EXPIRATION}
+    refresh-token-expiration: ${KUNDALIK_REFRESH_TOKEN_EXPIRATION}
+
+  minio:
+    endpoint: ${KUNDALIK_MINION_ENDPOINT}
+    access-key: ${KUNDALIK_MINIO_ACCESS_KEY}
+    secret-key: ${KUNDALIK_MINIO_SECRET_KEY}
+    buckets:
+      - kundalik
+      - other
+      - icons
+
+  telegram:
+    bot:
+      token: ${KUNDALIK_TELEGRAM_BOT_TOKEN}
+      username: ${KUNDALIK_TELEGRAM_BOT_USERNAME}
+      webhook-path: ${KUNDALIK_TELEGRAM_BOT_PATH}
+      chat-id: ${KUNDALIK_TELEGRAM_CHAT_ID}
+      channel-id: ${KUNDALIK_TELEGRAM_BOT_CHANNEL}
+
+  eskiz:
+    api:
+      url: ${KUNDALIK_ESKIZ_URL}
+      email: ${KUNDALIK_ESKIZ_EMAIL}
+      token: ${KUNDALIK_ESKIZ_TOKEN}
+    sms:
+      text: ${KUNDALIK_ESKIZ_SMS_TEXT}
+    test-mode: true # This flag enables test mode for Eskiz SMS sending
+
+  weather:
+    api-keys:
+      - ${KUNDALIK_WEATHER_API_KEY_1}
+      - ${KUNDALIK_WEATHER_API_KEY_2}
+    base-url: ${KUNDALIK_WEATHER_BASE_URL:https://api.weatherapi.com/v1}
+    endpoints:
+      forecast: /forecast.json
+      search: /search.json
+    default-days: ${KUNDALIK_WEATHER_DEFAULT_DAYS}
+    default-city: ${KUNDALIK_WEATHER_DEFAULT_CITY}
+
+  prayer:
+    base-url: ${KUNDALIK_PRAYER_BASE_URL:https://islomapi.uz/api}
+    endpoints:
+      week: /present/week/{region}
+      day: /present/day/{region}
+    default-city: ${KUNDALIK_PRAYER_DEFAULT_CITY}
+
+  currency:
+    base-url: ${KUNDALIK_CURRENCY_API_URL:https://cbu.uz/uz/arkhiv-kursov-valyut}
+    endpoints:
+      all-rates: /json/

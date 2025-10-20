@@ -34,7 +34,7 @@ public class TelegramWebhookController {
     private final UserRepository userRepository;
 
 
-    @Value("${telegram.bot.token}")
+    @Value("${application.telegram.bot.token}")
     private String botToken;
 
     public TelegramWebhookController(

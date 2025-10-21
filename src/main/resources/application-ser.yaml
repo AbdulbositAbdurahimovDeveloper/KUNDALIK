@@ -16,7 +16,7 @@ spring:
 
   data:
     redis:
-      host: ${KUNDALIK_SERVER_IP}
+      host: redis
       port: ${KUNDALIK_REDIS_PORT}
       password: ${KUNDALIK_REDIS_PASSWORD}
 

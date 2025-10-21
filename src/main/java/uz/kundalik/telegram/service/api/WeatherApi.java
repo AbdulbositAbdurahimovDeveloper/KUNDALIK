@@ -66,5 +66,4 @@ public interface WeatherApi {
 
     List<SearchLocationDTO> search(String query);
 
-    String dayFormatter(WeatherResponseDTO weatherResponseDTO, String langCode);
 }

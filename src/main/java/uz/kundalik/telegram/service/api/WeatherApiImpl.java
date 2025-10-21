@@ -80,32 +80,9 @@ public class WeatherApiImpl implements WeatherApi {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheNames.WEATHER_SEARCH, key = "#query")
     public List<SearchLocationDTO> search(String query) {
         return locationResponseDTO(query);
-    }
-
-
-    @Override
-    public String dayFormatter(WeatherResponseDTO weatherResponseDTO, String langCode) {
-        LocationDTO location = weatherResponseDTO.getLocation();
-        CurrentDTO current = weatherResponseDTO.getCurrent();
-        ForecastDayDTO forecastDayDTO = weatherResponseDTO.getForecast().getForecastDay().get(0);
-
-        return i18n.get(Utils.i18n.WEATHER_INFO, langCode).formatted(
-                location.getName(),
-                location.getLocaltime(),
-                current.getTempC(),
-                current.getFeelslikeC(),
-                current.getWindDir(),
-                current.getWindKph(),
-                current.getHumidity(),
-                current.getPressureMb(),
-                forecastDayDTO.getDay().getMaxTempC(),
-                forecastDayDTO.getDay().getMinTempC(),
-                forecastDayDTO.getDay().getDailyChanceOfRain(),
-                forecastDayDTO.getAstro().getSunrise(),
-                forecastDayDTO.getAstro().getSunset()
-        );
     }
 
     /**

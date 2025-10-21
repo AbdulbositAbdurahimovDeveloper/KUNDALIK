@@ -38,6 +38,8 @@ public final class CacheNames {
 
     public static final String PRAYER_WEEK = PREFIX + "prayer_week";
 
+    public static final String WEATHER_SEARCH = PREFIX + "weather_search";
+
     private CacheNames() {
         // Private constructor to prevent instantiation
     }

@@ -95,8 +95,8 @@ application:
   prayer:
     base-url: ${PRAYER_BASE_URL:https://islomapi.uz/api}
     endpoints:
-      week: /present/week/{region}
-      day: /present/day/{region}
+      week: /present/week
+      day: /present/day
     default-city: ${PRAYER_DEFAULT_CITY}
 
   currency:

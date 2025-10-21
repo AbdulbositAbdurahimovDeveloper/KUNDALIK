@@ -57,6 +57,7 @@ public class CacheConfig {
         final Duration weatherCacheTtl = Duration.ofMinutes(30);
         final Duration prayerCacheDayTtl = Duration.ofDays(1);
         final Duration prayerCacheWeekTtl = Duration.ofDays(7);
+        final Duration weatherSearchTtl = Duration.ofDays(14);
 
         Map<String, RedisCacheConfiguration> initialCacheConfigurations = new HashMap<>();
         initialCacheConfigurations.put(CacheNames.USERS, createCacheConfiguration(userCacheTtl, jsonRedisSerializer));
@@ -65,6 +66,7 @@ public class CacheConfig {
         initialCacheConfigurations.put(CacheNames.WEATHER, createCacheConfiguration(weatherCacheTtl, jsonRedisSerializer));
         initialCacheConfigurations.put(CacheNames.PRAYER_DAY, createCacheConfiguration(prayerCacheDayTtl, jsonRedisSerializer));
         initialCacheConfigurations.put(CacheNames.PRAYER_WEEK, createCacheConfiguration(prayerCacheWeekTtl, jsonRedisSerializer));
+        initialCacheConfigurations.put(CacheNames.WEATHER_SEARCH, createCacheConfiguration(weatherSearchTtl, jsonRedisSerializer));
 
         RedisCacheConfiguration defaultConfig = createCacheConfiguration(Duration.ofMinutes(5), jsonRedisSerializer);
 

@@ -3,6 +3,7 @@ package uz.kundalik.telegram.apiclient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import uz.kundalik.telegram.payload.prayer.PrayerDayDTO;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface PrayerTimeApiClient {
      * @return A list of {@link PrayerDayDTO} objects.
      */
     @GetMapping(value = "${application.prayer.endpoints.week}")
-    List<PrayerDayDTO> getWeeklyTimes(@PathVariable("region") String region);
+    List<PrayerDayDTO> getWeeklyTimes(@RequestParam("region") String region);
 
     /**
      * Fetches daily prayer times. The endpoint path is configured via
@@ -32,5 +33,5 @@ public interface PrayerTimeApiClient {
      * @return A single {@link PrayerDayDTO} object.
      */
     @GetMapping(value = "${application.prayer.endpoints.day}")
-    PrayerDayDTO getDailyTimes(@PathVariable("region") String region);
+    PrayerDayDTO getDailyTimes(@RequestParam("region") String region);
 }

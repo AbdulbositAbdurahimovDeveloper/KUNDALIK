@@ -35,24 +35,28 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        User user = new User();
-        user.setEmail("abdulbositabdurahimov260@gmail.com");
-        user.setPassword(passwordEncoder.encode("1234"));
-        user.setEnabled(true);
-        user.setRole(Role.ADMIN);
-        user.setProfile(new UserProfile(
-                "Abdulbosit",
-                "Abdurahimov",
-                Gender.MALE,
-                LocalDate.of(2006, 3, 25),
-                "+998931968377",
-                null,
-                user
-        ));
+        User user1 = userRepository.findByEmail("abdulbositabdurahimov260@gmail.com").orElse(null);
+        if (user1 == null) {
 
-        userRepository.save(user);
+            User user = new User();
+            user.setEmail("abdulbositabdurahimov260@gmail.com");
+            user.setPassword(passwordEncoder.encode("1234"));
+            user.setEnabled(true);
+            user.setRole(Role.ADMIN);
+            user.setProfile(new UserProfile(
+                    "Abdulbosit",
+                    "Abdurahimov",
+                    Gender.MALE,
+                    LocalDate.of(2006, 3, 25),
+                    "+998931968377",
+                    null,
+                    user
+            ));
 
-        System.out.println("User Created");
+            userRepository.save(user);
+
+            System.out.println("User Created");
+        }
 
 
     }

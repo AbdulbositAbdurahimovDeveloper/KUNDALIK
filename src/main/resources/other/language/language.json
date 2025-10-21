@@ -1,5 +1,6 @@
 {
   "uz": {
+    "error_message": "😕 Kechirasiz, kutilmagan texnik nosozlik yuz berdi. Jamoamiz bu haqida xabardor qilindi. Iltimos, birozdan so'ng qayta urinib ko'ring.",
     "message.auth_required": "🔐 Ushbu bo‘limdan foydalanish uchun <b>ro‘yxatdan o‘tishingiz</b> kerak.\nIltimos, \"Ro‘yxatdan o‘tish\" tugmasini bosing.",
     "message.premium_required": "💎 Ushbu funksiya faqat <b>premium foydalanuvchilar</b> uchun mavjud.\nQo‘shimcha imkoniyatlardan foydalanish uchun premium obunani yoqing.",
     "message.in_development": "⚙️ Ushbu funksiya hozirda <b>ishlab chiqilmoqda</b>.\nIltimos, keyinroq qayta urinib ko‘ring.",
@@ -9,7 +10,14 @@
     "not_found_city": "Bunday nomdagi shahar topilmadi. Iltimos, nomini tekshirib qayta kiriting.",
     "found_city": "Mos keluvchi shaharlar topildi. Iltimos, quyidagilardan birini tanlang:\n\n",
     "one_city": "%s Mamlakat: %s \n     joylashuv: %s \n shahar: %s \n",
-    "error_message": "😕 Kechirasiz, kutilmagan texnik nosozlik yuz berdi. Jamoamiz bu haqida xabardor qilindi. Iltimos, birozdan so'ng qayta urinib ko'ring.",
+    "prayer_time_template_html": "📍 <b>%s</b>\n🗓️ Bugun: <b>%s (%s)</b>\n🌙 Hijriy: <b>%s, %s</b>\n\n➖➖➖➖➖➖➖➖➖➖\n\n🌅 Tong (Saharlik):   <code>%s</code>\n☀️ Quyosh:             <code>%s</code>\n🏙️ Peshin:             <code>%s</code>\n🌆 Asr:                <code>%s</code>\n🌃 Shom (Iftor):       <code>%s</code>\n🌑 Hufton:             <code>%s</code>\n\n<i>Duolaringiz ijobat bo'lsin!</i>",
+    "prayer_time_not_found": "Namoz vaqtlari haqida ma'lumot topilmadi.",
+
+    "currency.pretty.header.html": "💰 <b>%s sanasi uchun valyuta kurslari:</b>",
+    "currency.pretty.line.html": "%s %s %s %s = <b>%s UZS</b> <i>(%s)</i>",
+    "currency.pretty.footer.html": "\n<i>🏦 Kurslar Markaziy bank ma’lumotlariga asoslangan.</i>",
+    "currency.info.not.found": "Valyuta kurslari haqida ma'lumot topilmadi.",
+
     "button_main_menu": "\uD83D\uDD19 Bosh menyu",
     "button_send_location": "📍 Joylashuvni yuborish",
     "button.weather": "🌦 Ob-havo",

@@ -4,22 +4,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.MaybeInaccessibleMessage;
 import uz.kundalik.telegram.controller.KundalikBot;
 import uz.kundalik.telegram.enums.UserState;
 import uz.kundalik.telegram.enums.UserStatus;
-import uz.kundalik.telegram.model.Language;
 import uz.kundalik.telegram.model.TelegramUser;
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
 import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
 import uz.kundalik.telegram.service.TelegramHelperService;
 import uz.kundalik.telegram.service.api.WeatherApi;
+import uz.kundalik.telegram.service.message.GenerationMessageService;
 import uz.kundalik.telegram.service.message.SendMsg;
 import uz.kundalik.telegram.service.message.i18n;
-import uz.kundalik.telegram.service.panel.admin.AdminCallbackQueryService;
 import uz.kundalik.telegram.utils.Utils;
 
 import java.util.List;
@@ -36,6 +33,7 @@ public class UserCallbackQueryServiceImpl implements UserCallbackQueryService {
     private final SendMsg sendMsg;
     private final i18n i18n;
     private final WeatherApi weatherApi;
+    private final GenerationMessageService generationMessageService;
 
     @Override
     public void handleCallbackQuery(CallbackQuery callbackQuery) {
@@ -64,7 +62,7 @@ public class UserCallbackQueryServiceImpl implements UserCallbackQueryService {
                     SearchLocationDTO searchLocationDTO = search.get(0);
 
                     WeatherResponseDTO info = weatherApi.info(searchLocationDTO.getLat(), searchLocationDTO.getLon());
-                    String dayFormatter = weatherApi.dayFormatter(info, langCode);
+                    String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
                     EditMessageText editMessageText = sendMsg.editMessage(chatId, messageId, dayFormatter);
                     kundalikBot.myExecute(editMessageText);
                 }

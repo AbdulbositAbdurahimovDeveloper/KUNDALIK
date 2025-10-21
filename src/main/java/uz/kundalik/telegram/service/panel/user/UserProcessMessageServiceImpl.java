@@ -13,6 +13,8 @@ import uz.kundalik.telegram.controller.KundalikBot;
 import uz.kundalik.telegram.enums.UserState;
 import uz.kundalik.telegram.enums.UserStatus;
 import uz.kundalik.telegram.model.TelegramUser;
+import uz.kundalik.telegram.payload.currency.CurrencyRateDTO;
+import uz.kundalik.telegram.payload.prayer.PrayerDayDTO;
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
 import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
 import uz.kundalik.telegram.repository.LanguageRepository;
@@ -20,9 +22,12 @@ import uz.kundalik.telegram.repository.TelegramUserRepository;
 import uz.kundalik.telegram.service.RoleService;
 import uz.kundalik.telegram.service.TelegramHelperService;
 import uz.kundalik.telegram.service.UserStateService;
+import uz.kundalik.telegram.service.api.CurrencyApi;
+import uz.kundalik.telegram.service.api.IslomApi;
 import uz.kundalik.telegram.service.api.WeatherApi;
 import uz.kundalik.telegram.service.keybard.user.UserInlineKeyboardService;
 import uz.kundalik.telegram.service.keybard.user.UserReplyKeyboardService;
+import uz.kundalik.telegram.service.message.GenerationMessageService;
 import uz.kundalik.telegram.service.message.SendMsg;
 import uz.kundalik.telegram.service.message.i18n;
 import uz.kundalik.telegram.utils.Utils;
@@ -46,6 +51,9 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     private final UserReplyKeyboardService userReplyKeyboardService;
     private final WeatherApi weatherApi;
     private final UserInlineKeyboardService userInlineKeyboardService;
+    private final IslomApi islomApi;
+    private final GenerationMessageService generationMessageService;
+    private final CurrencyApi currencyApi;
 
     @Override
     public void processMessage(Message message) {
@@ -74,7 +82,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
             } else if (text.equals(i18n.get(Utils.i18n.BUTTON_MAIN_MENU, langCode))) {
 
-                buttonMainMenu(chatId, langCode,userStatus);
+                buttonMainMenu(chatId, langCode, userStatus);
 
             } else if (text.equals(i18n.get(Utils.i18n.BUTTON_WEATHER, langCode))) {
 
@@ -108,7 +116,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
                 buttonSettings(chatId, langCode, userStatus);
 
-            } else if (userState.equals(UserState.AWAITING_LOCATION)) {
+            } else if (userState.equals(UserState.AWAITING_WEATHER_LOCATION)) {
 
                 List<SearchLocationDTO> locationDTOS = weatherApi.search(text);
 
@@ -139,11 +147,24 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
         } else if (message.hasLocation()) {
 
             switch (userState) {
-                case AWAITING_LOCATION -> {
+                case AWAITING_WEATHER_LOCATION -> {
                     Location location = message.getLocation();
                     WeatherResponseDTO info = weatherApi.info(location.getLatitude(), location.getLongitude());
-                    String dayFormatter = weatherApi.dayFormatter(info, langCode);
+                    String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
                     kundalikBot.myExecute(sendMsg.sendMessage(chatId, dayFormatter));
+                }
+                case AWAITING_PRAYER_LOCATION -> {
+                    Location location = message.getLocation();
+                    List<SearchLocationDTO> search = weatherApi.search(location.getLatitude() + "," + location.getLongitude());
+                    if (search == null || search.isEmpty()) {
+                        sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.PRAYER_NOT_FOUND, langCode));
+                    } else {
+                        SearchLocationDTO searchLocationDTO = search.get(0);
+                        String region = searchLocationDTO.getRegion();
+                        PrayerDayDTO prayerDayDTO = islomApi.getTodayPrayerTimes(region);
+                        String prayerDayFormatter = generationMessageService.prayerDayFormatter(prayerDayDTO, langCode);
+                        kundalikBot.myExecute(sendMsg.sendMessage(chatId, prayerDayFormatter));
+                    }
                 }
             }
 
@@ -212,7 +233,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
         switch (userStatus) {
             case ANONYMOUS -> {
-                userStateService.updateUserState(chatId, UserState.AWAITING_LOCATION);
+                userStateService.updateUserState(chatId, UserState.AWAITING_WEATHER_LOCATION);
                 String text = i18n.get(Utils.i18n.CHOOSE_LOCATION, langCode);
                 ReplyKeyboardMarkup locationMenu = userReplyKeyboardService.getLocationMenu(langCode);
                 SendMessage sendMessage = sendMsg.sendMessage(chatId, text, locationMenu);
@@ -222,7 +243,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                 List<Address> address = user.getAddress();
 
                 if (address == null || address.isEmpty()) {
-                    userStateService.updateUserState(chatId, UserState.AWAITING_LOCATION);
+                    userStateService.updateUserState(chatId, UserState.AWAITING_WEATHER_LOCATION);
                     String text = i18n.get(Utils.i18n.CHOOSE_LOCATION, langCode);
 
                     ReplyKeyboardMarkup locationMenu = userReplyKeyboardService.getLocationMenu(langCode);
@@ -234,7 +255,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
                     WeatherResponseDTO info = weatherApi.info(address1.getLatitude(), address1.getLongitude());
 
-                    String dayFormatter = weatherApi.dayFormatter(info, langCode);
+                    String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
 
                     kundalikBot.myExecute(sendMsg.sendMessage(chatId, dayFormatter));
 
@@ -250,9 +271,42 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     ///  BUTTON PRAYER METHODS
     ///  -----------------------------------------
     private void buttonPrayer(Long chatId, String langCode, UserStatus userStatus) {
-        userStateService.updateUserState(chatId, UserState.BUTTON_PRAYER);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
-        kundalikBot.myExecute(sendMessage);
+
+        TelegramUser telegramUser = telegramHelperService.telegramUser(chatId);
+        User user = telegramUser.getSiteUser();
+
+        switch (userStatus) {
+            case ANONYMOUS -> {
+                userStateService.updateUserState(chatId, UserState.AWAITING_PRAYER_LOCATION);
+                String text = i18n.get(Utils.i18n.CHOOSE_LOCATION, langCode);
+                ReplyKeyboardMarkup locationMenu = userReplyKeyboardService.getLocationMenu(langCode);
+                SendMessage sendMessage = sendMsg.sendMessage(chatId, text, locationMenu);
+                kundalikBot.myExecute(sendMessage);
+            }
+            case REGISTERED -> {
+                List<Address> address = user.getAddress();
+
+                if (address == null || address.isEmpty()) {
+                    userStateService.updateUserState(chatId, UserState.AWAITING_PRAYER_LOCATION);
+                    String text = i18n.get(Utils.i18n.CHOOSE_LOCATION, langCode);
+
+                    ReplyKeyboardMarkup locationMenu = userReplyKeyboardService.getLocationMenu(langCode);
+                    SendMessage sendMessage = sendMsg.sendMessage(chatId, text, locationMenu);
+                    kundalikBot.myExecute(sendMessage);
+                } else {
+
+                    Address address1 = address.get(0);
+                    String region = address1.getRegion();
+                    PrayerDayDTO todayPrayerTimes = islomApi.getTodayPrayerTimes(region);
+                    String prayerDayFormatter = generationMessageService.prayerDayFormatter(todayPrayerTimes, langCode);
+
+                    kundalikBot.myExecute(sendMsg.sendMessage(chatId, prayerDayFormatter));
+
+                }
+            }
+        }
+
+
     }
 
 
@@ -260,8 +314,12 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     ///  BUTTON CURRENCY METHODS
     ///  -----------------------------------------
     private void buttonCurrency(Long chatId, String langCode, UserStatus userStatus) {
-        userStateService.updateUserState(chatId, UserState.BUTTON_CURRENCY);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
+        List<CurrencyRateDTO> currencyRateDTOS = currencyApi.getAllRates();
+
+        String currencyFormatter = generationMessageService.currencyFormatter(currencyRateDTOS, chatId, langCode, userStatus);
+
+        SendMessage sendMessage = sendMsg.sendMessage(chatId, currencyFormatter);
+
         kundalikBot.myExecute(sendMessage);
     }
 

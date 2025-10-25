@@ -3,6 +3,9 @@ package uz.kundalik.telegram.service.message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.kundalik.telegram.enums.UserStatus;
+import uz.kundalik.telegram.payload.aladhan.DateInfo;
+import uz.kundalik.telegram.payload.aladhan.PrayerData;
+import uz.kundalik.telegram.payload.aladhan.Timings;
 import uz.kundalik.telegram.payload.currency.CurrencyRateDTO;
 import uz.kundalik.telegram.payload.prayer.HijriDateDTO;
 import uz.kundalik.telegram.payload.prayer.PrayerDayDTO;
@@ -13,8 +16,10 @@ import uz.kundalik.telegram.payload.weather.forecast.ForecastDayDTO;
 import uz.kundalik.telegram.payload.weather.location.LocationDTO;
 import uz.kundalik.telegram.utils.Utils;
 
-import java.util.List;
-import java.util.Set;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static uz.kundalik.telegram.utils.Utils.*;
 
@@ -82,6 +87,149 @@ public class GenerationMessageServiceImpl implements GenerationMessageService {
             // TODO: Boshqa foydalanuvchilar uchun
             return "Not implemented for registered users.";
         }
+    }
+
+    @Override
+    public String formatForFreeUser(PrayerData prayerData, String langCode, String city) {
+        Timings timings = prayerData.getTimings();
+        DateInfo date = prayerData.getDate();
+
+        // 1. Matn shablonini i18n'dan olamiz
+        String template = i18n.get(Utils.i18n.PRAYER_TIMES_FREE_FORMAT, langCode);
+
+        // 2. Shablonni ma'lumotlar bilan to'ldiramiz
+        return template
+                .replace("{city}", city)
+                .replace("{gregorian_date}", date.getGregorian().getDay() + "-" + date.getGregorian().getMonth().getEn())
+                .replace("{hijri_date}", date.getHijri().getDay() + "-" + date.getHijri().getMonth().getEn())
+                .replace("{fajr}", timings.getFajr())
+                .replace("{sunrise}", timings.getSunrise())
+                .replace("{dhuhr}", timings.getDhuhr())
+                .replace("{asr}", timings.getAsr())
+                .replace("{maghrib}", timings.getMaghrib())
+                .replace("{isha}", timings.getIsha());
+    }
+
+    /**
+     * Namoz vaqtlarini premium foydalanuvchilar uchun i18n yordamida formatlaydi.
+     *
+     * @param prayerData Namoz vaqtlari va sanalarini o'z ichiga olgan obyekt.
+     * @param langCode   Tarjima uchun til kodi.
+     * @param city       Shahar nomi.
+     * @param now        Joriy vaqt (qolgan vaqtni hisoblash uchun).
+     * @return Dinamik formatlangan tayyor matn.
+     */
+    @Override
+    public String formatForPremiumUser(PrayerData prayerData, String langCode, String city, LocalTime now) {
+        Timings timings = prayerData.getTimings();
+        DateInfo date = prayerData.getDate();
+
+        // Matnni yig'ish uchun StringBuilder
+        StringBuilder resultBuilder = new StringBuilder();
+
+        // 1. Sarlavha (Header) qismini formatlash
+        String headerTemplate = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_HEADER, langCode);
+        String gregorianFullDate = String.format("%s-%s, %s, %s",
+                date.getGregorian().getDay(), date.getGregorian().getMonth().getEn(),
+                date.getGregorian().getYear(), date.getGregorian().getWeekday().getEn());
+        String hijriFullDate = String.format("%s-%s (%s), %s",
+                date.getHijri().getDay(), date.getHijri().getMonth().getEn(),
+                date.getHijri().getMonth().getAr(), date.getHijri().getYear());
+
+        resultBuilder.append(
+                headerTemplate
+                        .replace("{city}", city.toUpperCase())
+                        .replace("{gregorian_full_date}", gregorianFullDate)
+                        .replace("{hijri_full_date}", hijriFullDate)
+        ).append("\n\n");
+
+        // 2. Namoz vaqtlarini va ularning nomlarini tartiblangan Map'ga joylash
+        Map<String, LocalTime> prayerTimes = new LinkedHashMap<>();
+        prayerTimes.put("Fajr", LocalTime.parse(timings.getFajr()));
+        prayerTimes.put("Dhuhr", LocalTime.parse(timings.getDhuhr()));
+        prayerTimes.put("Asr", LocalTime.parse(timings.getAsr()));
+        prayerTimes.put("Maghrib", LocalTime.parse(timings.getMaghrib()));
+        prayerTimes.put("Isha", LocalTime.parse(timings.getIsha()));
+
+        // 3. Keyingi namozni aniqlash
+        String nextPrayerKey = null;
+        for (Map.Entry<String, LocalTime> entry : prayerTimes.entrySet()) {
+            if (entry.getValue().isAfter(now)) {
+                nextPrayerKey = entry.getKey();
+                break;
+            }
+        }
+
+        // 4. Har bir namoz qatorini holatiga qarab formatlash
+        for (Map.Entry<String, LocalTime> entry : prayerTimes.entrySet()) {
+            String prayerKey = entry.getKey();
+            LocalTime prayerTime = entry.getValue();
+            String formattedTime = prayerTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+
+            String lineTemplate;
+            String finalLine;
+
+            String i18nPrayerName = getI18nPrayerName(prayerKey, langCode);
+
+            if (prayerKey.equals(nextPrayerKey)) {
+                // Bu KEYINGI namoz
+                lineTemplate = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_LINE_NEXT, langCode);
+
+                Duration duration = Duration.between(now, prayerTime);
+                long hours = duration.toHours();
+                long minutes = duration.toMinutes() % 60;
+
+                String remainingTimeFormat = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_REMAINING_TIME_FORMAT, langCode);
+                String remainingTime = remainingTimeFormat
+                        .replace("{hours}", String.valueOf(hours))
+                        .replace("{minutes}", String.valueOf(minutes));
+
+                finalLine = lineTemplate
+                        .replace("{prayer_name}", i18nPrayerName)
+                        .replace("{prayer_time}", formattedTime)
+                        .replace("{remaining_time}", remainingTime);
+
+            } else if (prayerTime.isBefore(now)) {
+                // Bu O'TIB KETGAN (o'qilgan) namoz
+                lineTemplate = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_LINE_PAST, langCode);
+                finalLine = lineTemplate
+                        .replace("{prayer_name}", i18nPrayerName)
+                        .replace("{prayer_time}", formattedTime);
+            } else {
+                // Bu KELAJAKDAGI (lekin keyingi bo'lmagan) namoz
+                lineTemplate = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_LINE_FUTURE, langCode);
+                finalLine = lineTemplate
+                        .replace("{prayer_name}", i18nPrayerName)
+                        .replace("{prayer_time}", formattedTime);
+            }
+
+            resultBuilder.append(finalLine).append("\n");
+        }
+
+        // 5. Oxirgi qism (Footer)
+        String footerTemplate = i18n.get(Utils.i18n.PRAYER_TIMES_PREMIUM_FOOTER, langCode);
+        resultBuilder.append(
+                footerTemplate.replace("{sunrise}", timings.getSunrise())
+        );
+
+        return resultBuilder.toString();
+    }
+
+    /**
+     * i18n'dan namozning tarjima qilingan nomini olish uchun yordamchi metod.
+     * Masalan, "Fajr" -> i18n.get("prayer_name_fajr") -> "🏙 Bomdod"
+     */
+    private String getI18nPrayerName(String prayerKey, String langCode) {
+        String i18nKey;
+        switch (prayerKey.toLowerCase()) { // Kichik harflar bilan solishtirish ishonchliroq
+            case "fajr":    i18nKey = Utils.i18n.PRAYER_NAME_FAJR; break;
+            case "dhuhr":   i18nKey = Utils.i18n.PRAYER_NAME_DHUHR; break;
+            case "asr":     i18nKey = Utils.i18n.PRAYER_NAME_ASR; break;
+            case "maghrib": i18nKey = Utils.i18n.PRAYER_NAME_MAGHRIB; break;
+            case "isha":    i18nKey = Utils.i18n.PRAYER_NAME_ISHA; break;
+            default:        return prayerKey; // Agar noma'lum kalit kelsa, o'zini qaytaramiz
+        }
+        return i18n.get(i18nKey, langCode);
     }
 
     private String formatForAnonymousUser(List<CurrencyRateDTO> allRates, String langCode) {

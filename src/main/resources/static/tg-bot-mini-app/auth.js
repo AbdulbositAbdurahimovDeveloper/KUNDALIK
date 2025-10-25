@@ -1,13 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Telegram Web App obyektini xavfsiz tarzda olish
+    // 1. O'zgaruvchilarni eng yuqorida, bir joyda e'lon qilish
     const telegramApp = window.Telegram?.WebApp;
-    if (telegramApp) {
-        telegramApp.ready();
-        telegramApp.expand();
-    }
-
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
     const tabButtons = document.querySelectorAll('.tab-link');
     const tabPanels = document.querySelectorAll('.tab-content');
+
+    // 2. Sahifa yuklanishi bilan darhol Telegram Web App obyektini tekshirish
+    if (telegramApp) {
+        console.log("✅ Sahifa yuklandi: Telegram Web App obyekti MAVJUD.");
+        // BU ENG MUHIM LOG: initData shu yerda ko'rinishi kerak
+        console.log("-> Boshlang'ich InitData qiymati:", telegramApp.initData);
+
+        telegramApp.ready();
+        telegramApp.expand();
+    } else {
+        console.warn("⚠️ DIQQAT: Sahifa yuklandi, lekin Telegram muhiti topilmadi. initData yuborilmaydi.");
+    }
+
+    // --- YORDAMCHI FUNKSIYALAR (O'zgarishsiz qoldirildi) ---
 
     function activateTab(targetId) {
         tabButtons.forEach(button => {
@@ -15,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
             button.classList.toggle('active', isActive);
             button.setAttribute('aria-selected', String(isActive));
         });
-
         tabPanels.forEach(panel => {
             const isActive = panel.id === targetId;
             panel.classList.toggle('active', isActive);
@@ -27,16 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         button.addEventListener('click', () => activateTab(button.dataset.tab));
     });
 
-    const loginForm = document.getElementById('loginForm');
-    const registerForm = document.getElementById('registerForm');
-
     function clearErrors(formElement) {
-        formElement.querySelectorAll('.error-message').forEach(message => {
-            message.textContent = '';
-        });
-        formElement.querySelectorAll('.is-invalid').forEach(field => {
-            field.classList.remove('is-invalid');
-        });
+        formElement.querySelectorAll('.error-message').forEach(message => message.textContent = '');
+        formElement.querySelectorAll('.is-invalid').forEach(field => field.classList.remove('is-invalid'));
         const generalError = formElement.querySelector('.general-error-message');
         if (generalError) {
             generalError.textContent = '';
@@ -51,14 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (input) {
                     input.classList.add('is-invalid');
                     const errorMessageSlot = input.closest('.form-group')?.querySelector('.error-message');
-                    if (errorMessageSlot) {
-                        errorMessageSlot.textContent = fieldError.message;
-                    }
+                    if (errorMessageSlot) errorMessageSlot.textContent = fieldError.message;
                 }
             });
         } else {
             const generalError = formElement.querySelector('.general-error-message');
-            const message = errorPayload?.message || 'Noma\'lum xatolik yuz berdi. Qaytadan urunib ko\'ring.';
+            const message = errorPayload?.message || 'Noma\'lum xatolik yuz berdi.';
             if (generalError) {
                 generalError.textContent = message;
                 generalError.style.display = 'block';
@@ -67,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // --- ASOSIY SO'ROVNI YUBORISH FUNKSIYASI ---
 
     async function handleSubmit(event, endpoint, successMessage) {
         event.preventDefault();
@@ -78,8 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.disabled = true;
         submitButton.textContent = 'Yuborilmoqda…';
 
-        // initData faqat Telegram muhitida mavjud bo'ladi
+        // 3. Sarlavhani (header) yaratish. U tashqaridagi 'telegramApp' o'zgaruvchisidan foydalanadi.
         const initDataHeader = telegramApp?.initData ? { 'Telegram-Init-Data': telegramApp.initData } : {};
+
+        // MUAMMONI ANIQLASH UCHUN LOG:
+        console.log("🚀 So'rov yuborishga tayyorlanmoqda...");
+        console.log("-> Yuborilayotgan sarlavha (header) obyekti:", initDataHeader);
 
         const formData = new FormData(formElement);
         const payload = Object.fromEntries(formData.entries());
@@ -89,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...initDataHeader // Brauzerda bu bo'sh obyekt bo'ladi
+                    ...initDataHeader
                 },
                 body: JSON.stringify(payload)
             });
@@ -100,12 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (telegramApp) {
                     telegramApp.showAlert(successMessage, () => telegramApp.close());
                 } else {
-                    alert(successMessage); // Brauzerda test uchun
+                    alert(successMessage);
                 }
             } else {
                 displayErrors(formElement, data);
             }
         } catch (error) {
+            // Xatolikni konsolga to'liq chiqarish
+            console.error("❗️ Fetch so'rovida xatolik yuz berdi:", error);
             const generalError = formElement.querySelector('.general-error-message');
             if (generalError) {
                 generalError.textContent = 'Server bilan bog\'lanishda xatolik. Internet aloqasini tekshiring.';
@@ -116,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.textContent = originalText;
         }
     }
+
+    // --- HODISALARNI BOG'LASH ---
 
     loginForm.addEventListener('submit', event =>
         handleSubmit(event, '/api/public/telegram/login', 'Muvaffaqiyatli tizimga kirdingiz!')

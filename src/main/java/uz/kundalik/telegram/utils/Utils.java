@@ -3,6 +3,7 @@ package uz.kundalik.telegram.utils;
 public interface Utils {
 
     String START = "/start";
+    String UZBEKISTAN = "Uzbekistan";
 
     interface i18n {
 
@@ -40,6 +41,35 @@ public interface Utils {
         String CURRENCY_PRETTY_LINE_HTML = "currency.pretty.line.html";
         String CURRENCY_PRETTY_FOOTER_HTML = "currency.pretty.footer.html";
 
+        // Oddiy foydalanuvchi uchun
+        String PRAYER_TIMES_FREE_FORMAT = "prayer_times_free_format";
+
+        // Premium foydalanuvchi uchun
+        String PRAYER_TIMES_PREMIUM_HEADER = "prayer_times_premium_header";
+        String PRAYER_TIMES_PREMIUM_LINE_NEXT = "prayer_times_premium_line_next";
+        String PRAYER_TIMES_PREMIUM_LINE_PAST = "prayer_times_premium_line_past";
+        String PRAYER_TIMES_PREMIUM_LINE_FUTURE = "prayer_times_premium_line_future";
+        String PRAYER_TIMES_PREMIUM_FOOTER = "prayer_times_premium_footer";
+        String PRAYER_TIMES_PREMIUM_REMAINING_TIME_FORMAT = "prayer_times_premium_remaining_time_format";
+
+        // Namoz nomlari
+        String PRAYER_NAME_FAJR = "prayer_name_fajr";
+        String PRAYER_NAME_DHUHR = "prayer_name_dhuhr";
+        String PRAYER_NAME_ASR = "prayer_name_asr";
+        String PRAYER_NAME_MAGHRIB = "prayer_name_maghrib";
+        String PRAYER_NAME_ISHA = "prayer_name_isha";
+        String FOUND_CITY_403 = "payer_city_forbidden";
+
+        String BUTTON_WEATHER_HOURLY = "button_weather_hourly";
+        String BUTTON_WEATHER_DAILY = "button_weather_daily";
+        String BUTTON_WEATHER_REFRESH = "button_weather_refresh";
+        String BUTTON_WEATHER_REMINDER = "button_weather_reminder";
+        String BUTTON_WEATHER_OTHER_CITY = "button_weather_other_city";
+        String ALERT_PREMIUM_FOR_REFRESH = "alert_premium_required_for_refresh";
+
+        String CHOOSE_WEATHER_TIMING = "choose_weather_timing";
+
+        String INFO_HOURLY_WEATHER = "info_hourly_weather";
 
 
 //        String LANGUAGE = "language";
@@ -81,7 +111,7 @@ public interface Utils {
 
     interface Action {
 
-        String ACTION_WEATHER = "W";
+        String ACTION_WEATHER = "whr";
         String ACTION_PRAYER = "P";
         String ACTION_CURRENCY = "C";
         String ACTION_NOTES = "N";
@@ -92,9 +122,16 @@ public interface Utils {
         String ACTION_CHOOSE = "choose";
         String ACTION_CITY = "city";
         String ACTION_LIST = "l";
+        String ACTION_INFO = "info";
+        String ACTION_REFRESH = "refresh";
+        String ACTION_OTHER_CITY = "other_city";
+        String ACTION_HOURLY = "hourly";
+        String ACTION_DAILY = "daily";
+        String ACTION_TIME = "time";
 
         String LOCK = "🔒 ";
         String ID = "id:";
+        String ACTION_CANCEL = "cancel";
 
 
         String ACTION_PAGE = "page";

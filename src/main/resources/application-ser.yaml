@@ -99,6 +99,10 @@ application:
       day: /present/day/{region}
     default-city: ${KUNDALIK_PRAYER_DEFAULT_CITY}
 
+  aladhan:
+    api:
+      base-url: http://api.aladhan.com/v1
+
   currency:
     base-url: ${KUNDALIK_CURRENCY_API_URL:https://cbu.uz/uz/arkhiv-kursov-valyut}
     endpoints:

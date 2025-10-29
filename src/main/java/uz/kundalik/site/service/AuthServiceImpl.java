@@ -100,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
 
         newUser.setRole(Role.USER);
-        newUser.setEnabled(false);
+        newUser.setEnabled(true);
 //        newUser.setEmailVerified(false);
         newUser.setAccountNonLocked(true);
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 import uz.kundalik.telegram.payload.weather.WeatherResponseDTO;
 import uz.kundalik.telegram.payload.weather.search.SearchLocationDTO;
 import uz.kundalik.telegram.service.keybard.InlineKeyboardService;
@@ -27,6 +28,9 @@ public class UserInlineKeyboardServiceImpl implements UserInlineKeyboardService 
 
     @Value("${application.prayer.default-city}")
     private String defaultCity;
+
+    @Value("${application.telegram.bot.webhook-path}")
+    private String webAppPath;
 
     @Override
     public InlineKeyboardMarkup chooseWeatherCity(List<SearchLocationDTO> locationDTOS, String time) {
@@ -203,4 +207,18 @@ public class UserInlineKeyboardServiceImpl implements UserInlineKeyboardService 
         return markup;
     }
 
+    @Override
+    public InlineKeyboardMarkup userRegisterAndLoginBtn(String langCode) {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        InlineKeyboardButton registerBtn = new InlineKeyboardButton();
+        registerBtn.setText(i18n.get(Utils.i18n.BUTTON_REGISTER_MSG, langCode));
+        registerBtn.setWebApp(new WebAppInfo(webAppPath + "/tg-bot-mini-app/auth.html"));
+
+        rows.add(List.of(registerBtn));
+        inlineKeyboardMarkup.setKeyboard(rows);
+        return  inlineKeyboardMarkup;
+    }
 }

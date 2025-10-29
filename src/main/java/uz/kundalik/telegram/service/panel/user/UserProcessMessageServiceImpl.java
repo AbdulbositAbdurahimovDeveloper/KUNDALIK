@@ -25,6 +25,7 @@ import uz.kundalik.telegram.service.UserStateService;
 import uz.kundalik.telegram.service.api.CurrencyApi;
 import uz.kundalik.telegram.service.api.IslomApi;
 import uz.kundalik.telegram.service.api.WeatherApi;
+import uz.kundalik.telegram.service.keybard.InlineKeyboardService;
 import uz.kundalik.telegram.service.keybard.user.UserInlineKeyboardService;
 import uz.kundalik.telegram.service.keybard.user.UserReplyKeyboardService;
 import uz.kundalik.telegram.service.message.GenerationMessageService;
@@ -54,6 +55,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     private final IslomApi islomApi;
     private final GenerationMessageService generationMessageService;
     private final CurrencyApi currencyApi;
+    private final InlineKeyboardService inlineKeyboardService;
 
     @Override
     public void processMessage(Message message) {
@@ -67,6 +69,14 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
         if (message.hasText()) {
 
             String text = message.getText();
+
+            if (text.equals("/login")) {
+
+                InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardService.welcomeFirstTime(chatId);
+                SendMessage sendMessage = sendMsg.sendMessage(chatId, "login", inlineKeyboardMarkup);
+                kundalikBot.myExecute(sendMessage);
+
+            }
 
             if (text.equals(Command.START)) {
 
@@ -135,7 +145,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                         sb.append(str);
                     }
 
-                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.chooseWeatherCity(locationDTOS,String.valueOf(System.currentTimeMillis()));
+                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.chooseWeatherCity(locationDTOS, String.valueOf(System.currentTimeMillis()));
                     SendMessage sendMessage = sendMsg.sendMessage(chatId, sb.toString(), inlineKeyboardMarkup);
                     kundalikBot.myExecute(sendMessage);
 
@@ -165,7 +175,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                             String str = i18n.get(Utils.i18n.ONE_CITY, langCode).formatted(i + 1, locationDTOS.get(i).getCountry(), locationDTOS.get(i).getRegion(), locationDTOS.get(i).getName());
                             sb.append(str);
                         }
-                        InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.choosePrayerCity(locationDTOS,String.valueOf(System.currentTimeMillis()));
+                        InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.choosePrayerCity(locationDTOS, String.valueOf(System.currentTimeMillis()));
                         SendMessage sendMessage = sendMsg.sendMessage(chatId, sb.toString(), inlineKeyboardMarkup);
                         kundalikBot.myExecute(sendMessage);
 
@@ -250,9 +260,16 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     /// COMMAND DASHBOARD METHODS
     /// -------------------------
     private void commandDashboard(Long chatId, String langCode) {
-        userStateService.updateUserState(chatId, UserState.COMMAND_DASHBOARD);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
-        kundalikBot.myExecute(sendMessage);
+        TelegramUser telegramUser = telegramHelperService.telegramUser(chatId);
+        if (telegramUser == null || telegramUser.getSiteUser() == null) {
+            InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.userRegisterAndLoginBtn(langCode);
+            SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.REGISTER_MSG, langCode), inlineKeyboardMarkup);
+            kundalikBot.myExecute(sendMessage);
+        } else {
+            userStateService.updateUserState(chatId, UserState.BUTTON_BIRTHDATE);
+            SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
+            kundalikBot.myExecute(sendMessage);
+        }
     }
 
 
@@ -308,7 +325,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
                     String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
 
-                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.weatherInfo(info, langCode,info.getForecast().getForecastDay().get(0).getDate());
+                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.weatherInfo(info, langCode, info.getForecast().getForecastDay().get(0).getDate());
 
                     SendMessage sendMessage = sendMsg.sendMessage(chatId, dayFormatter, inlineKeyboardMarkup);
 
@@ -424,7 +441,9 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     ///  -----------------------------------------
     private void buttonSettings(Long chatId, String langCode, UserStatus userStatus) {
         userStateService.updateUserState(chatId, UserState.BUTTON_SETTINGS);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
-        kundalikBot.myExecute(sendMessage);
+//        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
+//        kundalikBot.myExecute(sendMessage);
+
+
     }
 }

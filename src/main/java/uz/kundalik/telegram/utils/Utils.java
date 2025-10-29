@@ -70,6 +70,10 @@ public interface Utils {
         String CHOOSE_WEATHER_TIMING = "choose_weather_timing";
 
         String INFO_HOURLY_WEATHER = "info_hourly_weather";
+        String BUTTON_REGISTER_MSG = "button_register_message";
+        String REGISTER_MSG = "register_msg";
+        String NOTIFICATION_MSG = "notification_msg";
+        String NOTIFICATION_MSG_PREMIUM = "notification_msg_premium";
 
 
 //        String LANGUAGE = "language";

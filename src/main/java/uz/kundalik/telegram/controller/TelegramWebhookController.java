@@ -1,7 +1,7 @@
 package uz.kundalik.telegram.controller;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import jakarta.ws.rs.HEAD;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,7 @@ import uz.kundalik.site.payload.user.UserRegisterResponseDTO;
 import uz.kundalik.site.repository.UserRepository;
 import uz.kundalik.site.service.template.AuthService;
 import uz.kundalik.site.service.template.UserService;
+import uz.kundalik.telegram.enums.UserStatus;
 import uz.kundalik.telegram.model.TelegramUser;
 import uz.kundalik.telegram.repository.TelegramUserRepository;
 import uz.kundalik.telegram.service.TelegramValidationService;
@@ -60,7 +61,7 @@ public class TelegramWebhookController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO,
-                                   @RequestHeader(value = "Telegram-Init-Data", required = false) String initData) {
+                                  @RequestHeader(value = "Telegram-Init-Data", required = false) String initData) {
 
         if (telegramValidationService.validate(initData)) {
 
@@ -74,6 +75,8 @@ public class TelegramWebhookController {
 
             TelegramUser telegramUser = telegramUserRepository.findByChatId(chatId)
                     .orElseThrow(() -> new EntityNotFoundException("Telegram user not found"));
+            telegramUser.setSiteUser(user);
+            telegramUser.setUserStatus(UserStatus.REGISTERED);
 
             user.setTelegramUser(telegramUser);
             userRepository.save(user);

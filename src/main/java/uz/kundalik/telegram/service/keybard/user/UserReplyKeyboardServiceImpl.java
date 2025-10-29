@@ -57,12 +57,6 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
                 row4.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
                 row4.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
 
-                KeyboardButton keyboardButton = new KeyboardButton(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
-                String url = telegramProperties().getBot().getWebhookPath() + "/tg-bot-mini-app/auth.html";
-                WebAppInfo webApp = new WebAppInfo(url);
-                keyboardButton.setWebApp(webApp);
-                row5.add(keyboardButton);
-
             }
             case REGISTERED -> {
                 row2.add(i18n.get(Utils.i18n.BUTTON_NOTES, langCode));
@@ -74,11 +68,11 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
             }
             case PREMIUM -> {
                 row2.add(i18n.get(Utils.i18n.BUTTON_NOTES, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
 
-                row3.add(i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
-                row3.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
+                row4.add(i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
+                row4.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
             }
             default -> {
                 log.warn("userStatus not found");

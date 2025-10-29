@@ -12,6 +12,7 @@
     "one_city": "%s Mamlakat: %s \n     joylashuv: %s \n shahar: %s \n",
     "prayer_time_template_html": "📍 <b>%s</b>\n🗓️ Bugun: <b>%s (%s)</b>\n🌙 Hijriy: <b>%s, %s</b>\n\n➖➖➖➖➖➖➖➖➖➖\n\n🌅 Tong (Saharlik):   <code>%s</code>\n☀️ Quyosh:             <code>%s</code>\n🏙️ Peshin:             <code>%s</code>\n🌆 Asr:                <code>%s</code>\n🌃 Shom (Iftor):       <code>%s</code>\n🌑 Hufton:             <code>%s</code>\n\n<i>Duolaringiz ijobat bo'lsin!</i>",
     "prayer_time_not_found": "Namoz vaqtlari haqida ma'lumot topilmadi.",
+    "register_msg": "Bot toliq funksionalligidan foydalanish uchun iltimos royxatdan oting",
 
     "prayer_times_free_format": "🕌 *{city} shahri uchun namoz vaqtlari*\n\n📅 {gregorian_date} | {hijri_date}\n\nBomdod       →   *{fajr}* 🌅\nQuyosh       →   *{sunrise}* ☀️\nPeshin       →   *{dhuhr}* 🏞️\nAsr          →   *{asr}* 🌇\nShom         →   *{maghrib}* 🌆\nXufton       →   *{isha}* 🌃",
 
@@ -22,6 +23,9 @@
     "prayer_times_premium_footer": "\n☀️ *Quyosh chiqishi:* {sunrise}",
     "prayer_times_premium_remaining_time_format": "{hours} soat {minutes} daqiqa",
     "payer_city_forbidden": "Siz faqat uzbekiston hududlarining malumotini ololesiz",
+
+    "notification_msg": "🎉 Salom, %s! Tug‘ilgan kuningizga %d kun qoldi 🎂. Yangi yoshingiz sizga quvonch va muvaffaqiyat olib kelsin! ✨",
+    "notification_msg_premium": "💎 Salom, %s! Tug‘ilgan kuningizga %s qoldi 🎂. Kelayotgan yangi yoshingizda ilhom, omad va go‘zal lahzalarni tilaymiz! 🌟",
 
     "button_weather_hourly": "⏳ Soatlik",
     "button_weather_daily": "🗓 Kunlik",
@@ -45,6 +49,7 @@
     "currency.pretty.footer.html": "\n<i>🏦 Kurslar Markaziy bank ma’lumotlariga asoslangan.</i>",
     "currency.info.not.found": "Valyuta kurslari haqida ma'lumot topilmadi.",
 
+    "button_register_message": "\uD83D\uDE80 Kirish / Ro'yxatdan o'tish",
     "button_main_menu": "\uD83D\uDD19 Bosh menyu",
     "button_send_location": "📍 Joylashuvni yuborish",
     "button.weather": "🌦 Ob-havo",

@@ -15,4 +15,5 @@ public interface UserInlineKeyboardService {
 
     InlineKeyboardMarkup userChooseWeatherHourly(String infoCity, boolean first, String langCode);
 
+    InlineKeyboardMarkup userRegisterAndLoginBtn(String langCode);
 }

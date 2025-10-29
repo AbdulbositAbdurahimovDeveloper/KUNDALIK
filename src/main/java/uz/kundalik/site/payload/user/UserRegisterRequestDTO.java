@@ -42,4 +42,6 @@ public class UserRegisterRequestDTO {
     @NotNull(message = "Gender must be specified")
     private Gender gender;
 
+    private String initData;
+
 }

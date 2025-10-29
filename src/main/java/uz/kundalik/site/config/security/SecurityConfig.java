@@ -27,7 +27,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-
+                        .requestMatchers("/tg-bot-mini-app/**", "/*.html", "/*.js", "/*.css").permitAll()
                         .requestMatchers(
                                 "/api/v1/test/**",
 

@@ -25,6 +25,7 @@ import uz.kundalik.telegram.service.UserStateService;
 import uz.kundalik.telegram.service.api.CurrencyApi;
 import uz.kundalik.telegram.service.api.IslomApi;
 import uz.kundalik.telegram.service.api.WeatherApi;
+import uz.kundalik.telegram.service.keybard.InlineKeyboardService;
 import uz.kundalik.telegram.service.keybard.user.UserInlineKeyboardService;
 import uz.kundalik.telegram.service.keybard.user.UserReplyKeyboardService;
 import uz.kundalik.telegram.service.message.GenerationMessageService;
@@ -54,6 +55,7 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     private final IslomApi islomApi;
     private final GenerationMessageService generationMessageService;
     private final CurrencyApi currencyApi;
+    private final InlineKeyboardService inlineKeyboardService;
 
     @Override
     public void processMessage(Message message) {
@@ -67,6 +69,14 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
         if (message.hasText()) {
 
             String text = message.getText();
+
+            if (text.equals("/login")) {
+
+                InlineKeyboardMarkup inlineKeyboardMarkup = inlineKeyboardService.welcomeFirstTime(chatId);
+                SendMessage sendMessage = sendMsg.sendMessage(chatId, "login", inlineKeyboardMarkup);
+                kundalikBot.myExecute(sendMessage);
+
+            }
 
             if (text.equals(Command.START)) {
 
@@ -135,12 +145,50 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                         sb.append(str);
                     }
 
-                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.chooseCity(locationDTOS);
+                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.chooseWeatherCity(locationDTOS, String.valueOf(System.currentTimeMillis()));
                     SendMessage sendMessage = sendMsg.sendMessage(chatId, sb.toString(), inlineKeyboardMarkup);
                     kundalikBot.myExecute(sendMessage);
 
                 }
+            } else if (userState.equals(UserState.AWAITING_PRAYER_LOCATION)) {
 
+                List<SearchLocationDTO> locationDTOS = weatherApi.search(text);
+
+                if (locationDTOS == null || locationDTOS.isEmpty()) {
+                    String string = i18n.get(Utils.i18n.NOT_FOUND_CITY, langCode);
+                    SendMessage sendMessage = sendMsg.sendMessage(chatId, string);
+                    kundalikBot.myExecute(sendMessage);
+
+                } else {
+
+                    SearchLocationDTO searchLocationDTO = locationDTOS.get(0);
+
+                    String country = searchLocationDTO.getCountry();
+
+                    if (userStatus.equals(UserStatus.PREMIUM) || country.equals(UZBEKISTAN)) {
+
+                        String string = i18n.get(Utils.i18n.FOUND_CITY, langCode);
+
+                        StringBuilder sb = new StringBuilder(string);
+
+                        for (int i = 0; i < locationDTOS.size(); i++) {
+                            String str = i18n.get(Utils.i18n.ONE_CITY, langCode).formatted(i + 1, locationDTOS.get(i).getCountry(), locationDTOS.get(i).getRegion(), locationDTOS.get(i).getName());
+                            sb.append(str);
+                        }
+                        InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.choosePrayerCity(locationDTOS, String.valueOf(System.currentTimeMillis()));
+                        SendMessage sendMessage = sendMsg.sendMessage(chatId, sb.toString(), inlineKeyboardMarkup);
+                        kundalikBot.myExecute(sendMessage);
+
+                    } else {
+
+                        String message1 = i18n.get(Utils.i18n.FOUND_CITY_403, langCode);
+                        SendMessage sendMessage = sendMsg.sendMessage(chatId, message1);
+                        kundalikBot.myExecute(sendMessage);
+
+                    }
+
+
+                }
 
             }
 
@@ -151,7 +199,8 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                     Location location = message.getLocation();
                     WeatherResponseDTO info = weatherApi.info(location.getLatitude(), location.getLongitude());
                     String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
-                    kundalikBot.myExecute(sendMsg.sendMessage(chatId, dayFormatter));
+                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.weatherInfo(info, langCode, info.getForecast().getForecastDay().get(0).getDate());
+                    kundalikBot.myExecute(sendMsg.sendMessage(chatId, dayFormatter, inlineKeyboardMarkup));
                 }
                 case AWAITING_PRAYER_LOCATION -> {
                     Location location = message.getLocation();
@@ -159,11 +208,23 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
                     if (search == null || search.isEmpty()) {
                         sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.PRAYER_NOT_FOUND, langCode));
                     } else {
-                        SearchLocationDTO searchLocationDTO = search.get(0);
-                        String region = searchLocationDTO.getRegion();
-                        PrayerDayDTO prayerDayDTO = islomApi.getTodayPrayerTimes(region);
-                        String prayerDayFormatter = generationMessageService.prayerDayFormatter(prayerDayDTO, langCode);
-                        kundalikBot.myExecute(sendMsg.sendMessage(chatId, prayerDayFormatter));
+
+                        if (userStatus.equals(UserStatus.PREMIUM)) {
+
+                        } else {
+
+                            SearchLocationDTO searchLocationDTO = search.get(0);
+
+                            String country = searchLocationDTO.getCountry();
+                            if (country.equals("Uzbekistan")) {
+
+                            }
+
+                            String region = searchLocationDTO.getRegion();
+                            PrayerDayDTO prayerDayDTO = islomApi.getTodayPrayerTimes(region);
+                            String prayerDayFormatter = generationMessageService.prayerDayFormatter(prayerDayDTO, langCode);
+                            kundalikBot.myExecute(sendMsg.sendMessage(chatId, prayerDayFormatter));
+                        }
                     }
                 }
             }
@@ -199,9 +260,16 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     /// COMMAND DASHBOARD METHODS
     /// -------------------------
     private void commandDashboard(Long chatId, String langCode) {
-        userStateService.updateUserState(chatId, UserState.COMMAND_DASHBOARD);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
-        kundalikBot.myExecute(sendMessage);
+        TelegramUser telegramUser = telegramHelperService.telegramUser(chatId);
+        if (telegramUser == null || telegramUser.getSiteUser() == null) {
+            InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.userRegisterAndLoginBtn(langCode);
+            SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.REGISTER_MSG, langCode), inlineKeyboardMarkup);
+            kundalikBot.myExecute(sendMessage);
+        } else {
+            userStateService.updateUserState(chatId, UserState.BUTTON_BIRTHDATE);
+            SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
+            kundalikBot.myExecute(sendMessage);
+        }
     }
 
 
@@ -257,7 +325,11 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
 
                     String dayFormatter = generationMessageService.weatherDayFormatter(info, langCode);
 
-                    kundalikBot.myExecute(sendMsg.sendMessage(chatId, dayFormatter));
+                    InlineKeyboardMarkup inlineKeyboardMarkup = userInlineKeyboardService.weatherInfo(info, langCode, info.getForecast().getForecastDay().get(0).getDate());
+
+                    SendMessage sendMessage = sendMsg.sendMessage(chatId, dayFormatter, inlineKeyboardMarkup);
+
+                    kundalikBot.myExecute(sendMessage);
 
                 }
             }
@@ -369,7 +441,9 @@ public class UserProcessMessageServiceImpl implements UserProcessMessageService 
     ///  -----------------------------------------
     private void buttonSettings(Long chatId, String langCode, UserStatus userStatus) {
         userStateService.updateUserState(chatId, UserState.BUTTON_SETTINGS);
-        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
-        kundalikBot.myExecute(sendMessage);
+//        SendMessage sendMessage = sendMsg.sendMessage(chatId, i18n.get(Utils.i18n.MESSAGE_IN_DEVELOPMENT, langCode));
+//        kundalikBot.myExecute(sendMessage);
+
+
     }
 }

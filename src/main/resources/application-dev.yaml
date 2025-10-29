@@ -40,6 +40,9 @@ spring:
           starttls:
             enable: true
 
+  jackson:
+    time-zone: Asia/Tashkent
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -85,6 +88,7 @@ application:
     api-keys:
       - ${WEATHER_API_KEY_1}
       - ${WEATHER_API_KEY_2}
+      - ${WEATHER_API_KEY_3}
     base-url: ${WEATHER_BASE_URL:https://api.weatherapi.com/v1}
     endpoints:
       forecast: /forecast.json
@@ -99,10 +103,18 @@ application:
       day: /present/day
     default-city: ${PRAYER_DEFAULT_CITY}
 
+  aladhan:
+    api:
+      base-url: http://api.aladhan.com/v1
+
   currency:
     base-url: ${CURRENCY_API_URL:https://cbu.uz/uz/arkhiv-kursov-valyut}
     endpoints:
       all-rates: /json/
+  banks:
+    urls:
+      bank-url: 'https://bank.uz'
+      bank-currency-url: 'https://bank.uz/uz/currency'
 #  prayer:
 #    api-week-url: ${PRAYER_WEEK_API_URL}
 #    api-day-url: ${PRAYER_DAY_API_URL}

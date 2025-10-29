@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitButton.textContent = 'Yuborilmoqda…';
 
         // initData faqat Telegram muhitida mavjud bo'ladi
-        const initDataHeader = telegramApp?.initData ? { 'Telegram-Init-Data': telegramApp.initData } : {};
+        const initDataHeader = telegramApp?.initData ? {'Telegram-Init-Data': telegramApp.initData} : {};
 
         const formData = new FormData(formElement);
         const payload = Object.fromEntries(formData.entries());

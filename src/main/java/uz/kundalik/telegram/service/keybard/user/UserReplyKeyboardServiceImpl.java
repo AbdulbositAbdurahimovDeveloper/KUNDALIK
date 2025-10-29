@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
+import uz.kundalik.site.properties.ApplicationProperties;
+import uz.kundalik.site.properties.TelegramProperties;
 import uz.kundalik.telegram.enums.UserStatus;
 import uz.kundalik.telegram.service.TelegramHelperService;
 import uz.kundalik.telegram.service.message.i18n;
@@ -23,6 +26,12 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
     private final i18n i18n;
     private final TelegramHelperService telegramHelperService;
 
+    private final ApplicationProperties applicationProperties;
+    TelegramProperties telegramProperties(){
+        return applicationProperties.getTelegram();
+    }
+
+
     @Override
     public ReplyKeyboardMarkup welcomeMsg(String langCode, UserStatus userStatus) {
 
@@ -33,6 +42,7 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
         KeyboardRow row2 = new KeyboardRow();
         KeyboardRow row3 = new KeyboardRow();
         KeyboardRow row4 = new KeyboardRow();
+        KeyboardRow row5 = new KeyboardRow();
 
         row1.add(i18n.get(Utils.i18n.BUTTON_WEATHER, langCode));
         row1.add(i18n.get(Utils.i18n.BUTTON_PRAYER, langCode));
@@ -46,22 +56,23 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
 
                 row4.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
                 row4.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
+
             }
             case REGISTERED -> {
                 row2.add(i18n.get(Utils.i18n.BUTTON_NOTES, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
 
-                row3.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
-                row3.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
+                row4.add(Action.LOCK + i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
+                row4.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
             }
             case PREMIUM -> {
                 row2.add(i18n.get(Utils.i18n.BUTTON_NOTES, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
-                row2.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_REMINDER, langCode));
+                row3.add(i18n.get(Utils.i18n.BUTTON_BIRTHDATE, langCode));
 
-                row3.add(i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
-                row3.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
+                row4.add(i18n.get(Utils.i18n.BUTTON_WALLET, langCode));
+                row4.add(i18n.get(Utils.i18n.BUTTON_SETTINGS, langCode));
             }
             default -> {
                 log.warn("userStatus not found");
@@ -73,6 +84,7 @@ public class UserReplyKeyboardServiceImpl implements UserReplyKeyboardService {
         keyboardRows.add(row2);
         keyboardRows.add(row3);
         keyboardRows.add(row4);
+        keyboardRows.add(row5);
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         return replyKeyboardMarkup;
 

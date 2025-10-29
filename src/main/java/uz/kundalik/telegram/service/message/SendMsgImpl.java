@@ -177,6 +177,16 @@ public class SendMsgImpl implements SendMsg {
         return AnswerCallbackQuery.builder().callbackQueryId(callbackQueryId).text(text).build();
     }
 
+    @Override
+    public AnswerCallbackQuery answerCallbackQuery(String id, String text, boolean showAlert) {
+        return AnswerCallbackQuery.builder()
+                .callbackQueryId(id)
+                .text(text)
+                .showAlert(showAlert)
+                .build();
+    }
+
+
     /**
      * @param chatId
      * @param telegramFileId

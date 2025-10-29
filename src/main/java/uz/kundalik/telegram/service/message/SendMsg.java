@@ -57,7 +57,9 @@ public interface SendMsg {
 
     AnswerCallbackQuery answerCallbackQuery(String callbackQueryId, String text);
 
-    SendVideo sendVideo(Long chatId, String telegramFileId,InlineKeyboardMarkup keyboard);
+    AnswerCallbackQuery answerCallbackQuery(String callbackQueryId, String text, boolean alert);
+
+    SendVideo sendVideo(Long chatId, String telegramFileId, InlineKeyboardMarkup keyboard);
 
     EditMessageCaption editMessageCaption(Long chatId, Integer messageId, String caption, InlineKeyboardMarkup keyboard);
 
@@ -70,6 +72,6 @@ public interface SendMsg {
 
     SendVoice sendVoice(String channelId, String fileId, String caption);
 
-   SendVideoNote sendVideoNote(String channelId, String fileId);
+    SendVideoNote sendVideoNote(String channelId, String fileId);
 
 }

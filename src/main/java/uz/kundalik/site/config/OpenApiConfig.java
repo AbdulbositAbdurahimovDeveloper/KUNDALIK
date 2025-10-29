@@ -29,11 +29,11 @@ import io.swagger.v3.oas.annotations.servers.Server;
         servers = {
                 @Server(
                         url = "http://localhost:8080",
-                        description = "Production-Server"
+                        description = "Test-Server"
                 ),
                 @Server(
-                        url = "http://213.199.55.47:9990",
-                        description = "Test-Server"
+                        url = "https://abdulbosit.uz",
+                        description = "Production-Server"
                 )
 
         },

@@ -3,7 +3,7 @@ spring:
     name: KUNDALIK
 
   profiles:
-    active: dev
+    active: ser
 
   banner:
     location: classpath:banner.txt

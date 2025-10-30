@@ -37,3 +37,6 @@ info:
   application:
     name: ${spring.application.name}
     version: @project.version@ # pom.xml'dagi versiyani avtomatik oladi
+
+
+

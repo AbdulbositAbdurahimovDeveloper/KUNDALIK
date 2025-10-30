@@ -61,6 +61,7 @@ pipeline {
                          -p 4000:4000 \\
                          --network app-network \\
                          --restart unless-stopped \\
+                         -v /var/lib/jenkins/workspace/KUNDALIK/logs:/app/logs \\
                          -e DB_USERNAME="${DB_USERNAME}" \\
                          -e DB_PASSWORD="${DB_PASSWORD}" \\
                          -e KUNDALIK_SERVER_IP=redis \\

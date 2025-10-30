@@ -1,7 +1,13 @@
+# src/main/resources/application.yml (LOKAL uchun to'g'ri versiya)
+
+server:
+  port: 8080 # Ilovaning asosiy porti
+
 spring:
   application:
     name: KUNDALIK
 
+  # Lokal ishlatish uchun 'dev' profilini yoqamiz
   profiles:
     active: ser
 
@@ -13,30 +19,23 @@ spring:
 # ===================================================================
 management:
   server:
-    # Actuator uchun alohida port ochamiz
+    # Lokal uchun kelishilgan port
     port: 4000
   endpoints:
     web:
       exposure:
-        # Faqat 'prometheus' endpoint'ini web orqali ko'rinadigan qilamiz
         include: prometheus
   endpoint:
     health:
-      # /actuator/health endpoint'i batafsil ma'lumot ko'rsatishi uchun
       show-details: always
       probes:
-        # Kubernetes kabi tizimlar uchun health-check'ni yoqamiz
         enabled: true
   metrics:
     tags:
-      # Har bir metrikaga ilova nomini qo'shib qo'yamiz (Grafana'da filtrlash uchun qulay)
       application: ${spring.application.name}
 
 # Ilova haqida umumiy ma'lumot
 info:
   application:
     name: ${spring.application.name}
-    version: @project.version@ # pom.xml'dagi versiyani avtomatik oladi
-
-
-
+    version: @project.version@

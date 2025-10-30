@@ -10,7 +10,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:21-slim
 WORKDIR /app
 COPY --from=builder /app/target/*-SNAPSHOT.jar app.jar
-# Server uchun to'g'ri portlarni e'lon qilamiz
+# Server uchun siz kelishgan portlarni e'lon qilamiz
 EXPOSE 8080
-EXPOSE 9095
+EXPOSE 4000
 ENTRYPOINT ["java", "-jar", "app.jar"]

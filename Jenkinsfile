@@ -65,6 +65,7 @@ sh """
     docker run -d \\
       --name "${CONTAINER_NAME}" \\
       -p 9999:8080 \\
+      -p 9095:9095 \\
       --network app-network \\
       --restart unless-stopped \\
       -e DB_USERNAME="${DB_USERNAME}" \\

@@ -7,3 +7,33 @@ spring:
 
   banner:
     location: classpath:banner.txt
+
+# ===================================================================
+#   MONITORING & MANAGEMENT CONFIGURATION (ACTUATOR)
+# ===================================================================
+management:
+  server:
+    # Actuator uchun alohida port ochamiz
+    port: 9095
+  endpoints:
+    web:
+      exposure:
+        # Faqat 'prometheus' endpoint'ini web orqali ko'rinadigan qilamiz
+        include: prometheus
+  endpoint:
+    health:
+      # /actuator/health endpoint'i batafsil ma'lumot ko'rsatishi uchun
+      show-details: always
+      probes:
+        # Kubernetes kabi tizimlar uchun health-check'ni yoqamiz
+        enabled: true
+  metrics:
+    tags:
+      # Har bir metrikaga ilova nomini qo'shib qo'yamiz (Grafana'da filtrlash uchun qulay)
+      application: ${spring.application.name}
+
+# Ilova haqida umumiy ma'lumot
+info:
+  application:
+    name: ${spring.application.name}
+    version: @project.version@ # pom.xml'dagi versiyani avtomatik oladi

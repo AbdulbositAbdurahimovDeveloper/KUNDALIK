@@ -1,0 +1,38 @@
+services:
+  prometheus:
+    build:
+      context: .
+      dockerfile: monitoring/prometheus.dockerfile
+    container_name: prometheus
+    ports:
+      - "9091:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+
+  promtail:
+    build:
+      context: .
+      dockerfile: monitoring/promtail.dockerfile
+    container_name: promtail
+    volumes:
+      - ./logs:/var/log/kundalik
+    restart: unless-stopped
+
+volumes:
+  grafana-data:

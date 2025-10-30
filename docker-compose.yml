@@ -1,0 +1,49 @@
+# docker-compose.yml (Monitoring uchun)
+services:
+  prometheus:
+    build:
+      context: .
+      dockerfile: monitoring/prometheus.dockerfile
+    container_name: prometheus
+    ports:
+      - "9091:9090" # Prometheus UI
+    # --network app-network qatorini qo'shamiz
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana UI
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100" # Loki API
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  promtail:
+    build:
+      context: .
+      dockerfile: monitoring/promtail.dockerfile
+    container_name: promtail
+    volumes:
+      # Jenkins ilovani /var/jenkins_home/workspace/... ichida build qiladi.
+      # Bu yo'lni serveringizdagi aniq yo'lga o'zgartirishingiz kerak bo'ladi.
+      - /var/jenkins_home/workspace/KUNDALIK_main/logs:/var/log/kundalik
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# Barcha servislar ishlaydigan umumiy tarmoqni belgilaymiz
+networks:
+  app-network:
+    external: true

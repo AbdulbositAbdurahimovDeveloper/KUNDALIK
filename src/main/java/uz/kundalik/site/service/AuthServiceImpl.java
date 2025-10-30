@@ -3,6 +3,8 @@ package uz.kundalik.site.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,7 +56,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
@@ -66,6 +67,32 @@ public class AuthServiceImpl implements AuthService {
     private final MailService mailService;
     private final ObjectMapper objectMapper;
     private final GenerateUniqueService generateUniqueService;
+    private final Counter registrationCounter;
+
+    public AuthServiceImpl(UserService userService,
+                           PasswordEncoder passwordEncoder,
+                           JwtService jwtService,
+                           ApplicationProperties applicationProperties,
+                           UserRepository userRepository,
+                           VerificationTokenRepository verificationTokenRepository,
+                           MailService mailService,
+                           ObjectMapper objectMapper,
+                           GenerateUniqueService generateUniqueService,
+                           MeterRegistry meterRegistry
+    ) {
+        this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.applicationProperties = applicationProperties;
+        this.userRepository = userRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+        this.mailService = mailService;
+        this.objectMapper = objectMapper;
+        this.generateUniqueService = generateUniqueService;
+        this.registrationCounter = Counter.builder("users.registered.total")
+                .description("Total number of new user registrations")
+                .register(meterRegistry);
+    }
 
     JwtProperties jwtProperties() {
         return applicationProperties.getJwt();
@@ -118,14 +145,14 @@ public class AuthServiceImpl implements AuthService {
         createAndSaveToken(savedUser, verificationCode, TokenType.ACCOUNT_ACTIVATION);
         mailService.sendVerificationEmail(savedUser, verificationCode);
 
+        this.registrationCounter.increment();
+
         return new UserRegisterResponseDTO(
                 savedUser.getId(),
                 "Registration successful. Please check your email to verify your account.",
                 VerificationMethod.EMAIL,
                 savedUser.getEmail()
         );
-
-
     }
 
     /**

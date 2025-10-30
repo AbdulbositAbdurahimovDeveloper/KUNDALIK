@@ -30,6 +30,7 @@ COPY --from=builder /app/target/*-SNAPSHOT.jar app.jar
 
 # Ilova 8080-portda ishlashini belgilaymiz
 EXPOSE 8080
+EXPOSE 9095
 
 # Konteyner ishga tushganda bajariladigan asosiy buyruq
 ENTRYPOINT ["java", "-jar", "app.jar"]

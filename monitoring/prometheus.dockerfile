@@ -1,3 +1,3 @@
 FROM prom/prometheus:latest
-
-COPY monitoring/prom.yml /etc/prometheus/prometheus.yml
+# Faylning to'g'ri nomini ko'rsatamiz
+COPY monitoring/prometheus.yml /etc/prometheus/prometheus.yml

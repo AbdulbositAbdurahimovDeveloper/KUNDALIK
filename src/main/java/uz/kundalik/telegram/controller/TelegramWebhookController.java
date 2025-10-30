@@ -105,9 +105,11 @@ public class TelegramWebhookController {
                 return ResponseEntity.status(409).body(ResponseDTO.error(new ErrorDTO(409, "Telegram user already connected")));
             }
 
+            telegramUser.setSiteUser(user);
+            telegramUser.setUserStatus(UserStatus.REGISTERED);
+
             user.setTelegramUser(telegramUser);
             userRepository.save(user);
-
             return ResponseEntity.ok(ResponseDTO.success("OK"));
 
         }

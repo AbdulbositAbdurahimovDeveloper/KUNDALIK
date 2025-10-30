@@ -1,4 +1,4 @@
-// Jenkinsfile (Monitoring tizimi alohida ishlab turganda)
+// Jenkinsfile (Monitoring tizimi alohida ishlab turganda, TO'G'RI PORTLAR bilan)
 
 pipeline {
     agent any
@@ -9,11 +9,8 @@ pipeline {
     }
 
     environment {
-        // Build raqamiga asoslangan unikal image nomi
         IMAGE_NAME = "kundalik/app:${env.BUILD_NUMBER}"
-        // Eng so'nggi versiyani belgilovchi teg
         LATEST_IMAGE = "kundalik/app:latest"
-        // Konteyner nomi
         CONTAINER_NAME = 'kundalik-container'
     }
 
@@ -30,8 +27,6 @@ pipeline {
         stage('2. Build Application Image') {
             steps {
                 echo "Ilova uchun Docker image qurilmoqda: ${IMAGE_NAME}"
-                // Bu buyruq loyihangizdagi Dockerfile'dan foydalanib, ilovaning o'zini "build" qiladi.
-                // Uning ichida Maven build jarayoni ham bor.
                 sh "docker build -t ${IMAGE_NAME} -t ${LATEST_IMAGE} ."
                 echo "Docker image muvaffaqiyatli qurildi: ${IMAGE_NAME} va ${LATEST_IMAGE}"
             }
@@ -62,7 +57,7 @@ pipeline {
                        docker run -d \\
                          --name "${CONTAINER_NAME}" \\
                          -p 9999:8080 \\
-                         -p 9095:9095 \\
+                         -p 4000:4000 \\  // <-- PORTNI 4000 GA O'ZGARTIRDIK
                          --network app-network \\
                          --restart unless-stopped \\
                          -e DB_USERNAME="${DB_USERNAME}" \\

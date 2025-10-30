@@ -2,6 +2,8 @@
 
 server:
   port: 8080 # Ilovaning asosiy porti
+  tomcat:
+    redirect-context-root:
 
 spring:
   application:
@@ -33,6 +35,8 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+    enable:
+      tomcat: true
 
 # Ilova haqida umumiy ma'lumot
 info:

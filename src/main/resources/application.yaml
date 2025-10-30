@@ -3,7 +3,7 @@ spring:
     name: KUNDALIK
 
   profiles:
-    active: ser
+    active: dev
 
   banner:
     location: classpath:banner.txt
@@ -14,7 +14,7 @@ spring:
 management:
   server:
     # Actuator uchun alohida port ochamiz
-    port: 9095
+    port: 4000
   endpoints:
     web:
       exposure:

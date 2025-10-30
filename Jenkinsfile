@@ -1,19 +1,20 @@
-// Jenkinsfile (Yakuniy va To'g'ri Versiya)
+// Jenkinsfile (Monitoring tizimi alohida ishlab turganda)
 
 pipeline {
     agent any
 
     tools {
-        maven 'maven'
-        jdk 'JDK21'
+        maven 'maven' // Jenkins sozlamalaridagi Maven nomi
+        jdk 'JDK21'   // Jenkins sozlamalaridagi JDK nomi
     }
 
     environment {
+        // Build raqamiga asoslangan unikal image nomi
         IMAGE_NAME = "kundalik/app:${env.BUILD_NUMBER}"
+        // Eng so'nggi versiyani belgilovchi teg
         LATEST_IMAGE = "kundalik/app:latest"
-        APP_CONTAINER_NAME = 'kundalik-container'
-        // Monitoring servislarining umumiy loyiha nomi
-        COMPOSE_PROJECT_NAME = 'kundalik_monitoring'
+        // Konteyner nomi
+        CONTAINER_NAME = 'kundalik-container'
     }
 
     stages {
@@ -26,28 +27,20 @@ pipeline {
             }
         }
 
-        // === 2-BOSQICH: Monitoringni Ishga Tushirish/Yangilash ===
-       stage('2. Start/Update Monitoring Services') {
-           steps {
-               echo "Monitoring servislarini (Prometheus, Grafana, Loki) ishga tushirish..."
-               // -p o'rniga COMPOSE_PROJECT_NAME muhit o'zgaruvchisini ishlatamiz
-               sh "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} docker compose up --build -d --remove-orphans"
-               echo "Monitoring servislar muvaffaqiyatli ishga tushirildi."
-           }
-       }
-
-        stage('3. Build Application Image') {
+        stage('2. Build Application Image') {
             steps {
                 echo "Ilova uchun Docker image qurilmoqda: ${IMAGE_NAME}"
+                // Bu buyruq loyihangizdagi Dockerfile'dan foydalanib, ilovaning o'zini "build" qiladi.
+                // Uning ichida Maven build jarayoni ham bor.
                 sh "docker build -t ${IMAGE_NAME} -t ${LATEST_IMAGE} ."
-                echo "Docker image muvaffaqiyatli qurildi."
+                echo "Docker image muvaffaqiyatli qurildi: ${IMAGE_NAME} va ${LATEST_IMAGE}"
             }
         }
 
-        stage('4. Deploy Application') {
+        stage('3. Deploy Application') {
             steps {
-                echo "Eski ilova konteyneri o'chirilmoqda..."
-                sh "docker rm -f ${APP_CONTAINER_NAME} || true"
+                echo "Eski ilova konteyneri o'chirilmoqda (agar mavjud bo'lsa)..."
+                sh "docker rm -f ${CONTAINER_NAME} || true"
 
                 echo "Ilova konteyneri ishga tushirilmoqda..."
                 withCredentials([
@@ -67,7 +60,7 @@ pipeline {
                 ]) {
                    sh """
                        docker run -d \\
-                         --name "${APP_CONTAINER_NAME}" \\
+                         --name "${CONTAINER_NAME}" \\
                          -p 9999:8080 \\
                          -p 9095:9095 \\
                          --network app-network \\

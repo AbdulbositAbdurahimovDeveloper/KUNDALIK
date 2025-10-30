@@ -27,15 +27,14 @@ pipeline {
         }
 
         // === 2-BOSQICH: Monitoringni Ishga Tushirish/Yangilash ===
-        stage('2. Start/Update Monitoring Services') {
-            steps {
-                echo "Monitoring servislarini (Prometheus, Grafana, Loki) ishga tushirish..."
-                // `-p` loyiha nomini belgilaydi, bu konteyner nomlarini bir xil saqlaydi
-                // `--remove-orphans` eski, keraksiz konteynerlarni o'chiradi
-                sh "docker compose -p ${COMPOSE_PROJECT_NAME} up --build -d --remove-orphans"
-                echo "Monitoring servislar muvaffaqiyatli ishga tushirildi."
-            }
-        }
+       stage('2. Start/Update Monitoring Services') {
+           steps {
+               echo "Monitoring servislarini (Prometheus, Grafana, Loki) ishga tushirish..."
+               // -p o'rniga COMPOSE_PROJECT_NAME muhit o'zgaruvchisini ishlatamiz
+               sh "COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME} docker compose up --build -d --remove-orphans"
+               echo "Monitoring servislar muvaffaqiyatli ishga tushirildi."
+           }
+       }
 
         stage('3. Build Application Image') {
             steps {
